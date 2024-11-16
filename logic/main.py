@@ -37,12 +37,10 @@ def RungeKutta(x_point:int, y_point:int, h:int)->Tuple[List[float|int],List[floa
         k4 =  edo(ast,{'x': X_right[i] + h, 'y': y_right[i] + k3})
         y_right[i+1] = (y_right[i] + h*(1/6 * k1 + 1/3 * k2 + 1/3 * k3 + 1/6 * k4))
 
-    # si retorna nan 0 inf es que dividió por 0 o esta haciendo cosas en lugares indefinidos  
+    # si retorna nan o inf es que dividió por 0 o esta haciendo cosas en lugares indefinidos  
     return X_right,y_right
 
 
-
-RungeKutta(x_point,y_point,h)
 
 
 
