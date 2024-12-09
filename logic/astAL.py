@@ -146,7 +146,7 @@ class Log(Expression):
         super().__init__(left, right)
 
     def eval(self, variables):
-        return np.log(self.left.eval(variables))
+        return np.log10(self.left.eval(variables))
 
     def __str__(self) -> str:
         return f"log( {self.left} )"

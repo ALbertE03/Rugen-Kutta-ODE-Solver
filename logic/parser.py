@@ -1,4 +1,5 @@
 from lexer import Token, TokenType
+from error import Parentesis_Error
 from astAL import (
     Expression,
     Term,
@@ -90,4 +91,4 @@ class Parser:
             elif token.token_type == TokenType.RIGHT_PARENTHESIS:
                 balance -= 1
         if balance != 0:
-            raise "Ha habido un error con los parentesis"
+            raise Parentesis_Error("Coloque correctamente los parentesis")
