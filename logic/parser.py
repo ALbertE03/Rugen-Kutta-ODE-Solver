@@ -69,6 +69,7 @@ class Parser:
             or tokens[0].token_type == TokenType.TAN
             or tokens[0].token_type == TokenType.COT
             or tokens[0].token_type == TokenType.LN
+            or tokens[0].token_type == TokenType.LOG
         ):
             return token_to_class[tokens[0].token_type](self.make_ast(tokens[1:]), None)
 

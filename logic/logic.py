@@ -7,8 +7,9 @@ from typing import Tuple, List
 from error import *
 from matplotlib.quiver import Quiver
 
-class RungeKutta():
-    def __init__(self,x0:int,y0:int,xf:int,h:float,function:str):
+
+class RungeKutta:
+    def __init__(self, x0: int, y0: int, xf: int, h: float, function: str):
         self.x0 = x0
         self.y0 = y0
         self.h = h
@@ -27,35 +28,34 @@ class RungeKutta():
             variables[key] = value
         return self.ast.eval(variables)
 
-
-    def solver(self)->Tuple[List[float|int],List[float|int]]:
+    def solver(self) -> Tuple[List[float], List[float]]:
         try:
-            X_right = np.arange(self.x0,self.xf,self.h)
-            
+            X_right = np.arange(self.x0, self.xf, self.h)
+
             y_right = np.zeros(len(X_right))
-            
-            y_right[0]= self.y0
 
-            #### Runge-Kutta 
-            for i in range(len(X_right)-1): 
-                k1 =  self.edo({'x': X_right[i], 'y': y_right[i]})
-                k2 =  self.edo({'x': X_right[i] + self.h / 2, 'y': y_right[i] + k1 / 2})
-                k3 =  self.edo({'x': X_right[i] + self.h / 2, 'y': y_right[i] + k2 / 2})
-                k4 =  self.edo({'x': X_right[i] + self.h, 'y': y_right[i] + k3})
-                y_right[i+1] = (y_right[i] + self.h*(1/6 * k1 + 1/3 * k2 + 1/3 * k3 + 1/6 * k4))
+            y_right[0] = self.y0
 
-            # si retorna nan o inf es que dividió por 0 o esta haciendo cosas en lugares indefinidos  
-            return X_right,y_right
+            #### Runge-Kutta
+            for i in range(len(X_right) - 1):
+                k1 = self.edo({"x": X_right[i], "y": y_right[i]})
+                k2 = self.edo({"x": X_right[i] + self.h / 2, "y": y_right[i] + k1 / 2})
+                k3 = self.edo({"x": X_right[i] + self.h / 2, "y": y_right[i] + k2 / 2})
+                k4 = self.edo({"x": X_right[i] + self.h, "y": y_right[i] + k3})
+                y_right[i + 1] = y_right[i] + self.h * (
+                    k1 / 6 + k2 / 3 + k3 / 3 + k4 / 6
+                )
+
+            # si retorna nan o inf es que dividió por 0 o esta haciendo cosas en lugares indefinidos
+            return X_right, y_right
         except:
             raise RK_Error()
 
-    def isoclinas(self)->Quiver:
-        X_right = np.arange(self.x0,self.xf,self.h)
-        x_values = np.linspace(-10, 10, 20) 
-        y_values = np.linspace(-10, 10, 20)  
+    def isoclinas(self) -> Quiver:
+        X_right = np.arange(self.x0, self.xf, self.h)
+        x_values = np.linspace(-10, 10, 20)
+        y_values = np.linspace(-10, 10, 20)
         X, Y = np.meshgrid(x_values, y_values)
-        U = 1  
-        V = self.edo({'x':X,'y': Y})
-        return plt.quiver(X, Y, U, V, color='lightgray')
-
-
+        U = 1
+        V = self.edo({"x": X, "y": Y})
+        return plt.quiver(X, Y, U, V, color="lightgray")

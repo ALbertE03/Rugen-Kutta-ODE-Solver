@@ -23,7 +23,6 @@ class TokenType(Enum):
     STRING = auto()
     NUMBER = auto()
 
-    # Arithmetic Operators
     PLUS = auto()
     MINUS = auto()
     TIMES = auto()
@@ -36,15 +35,12 @@ class TokenType(Enum):
     LOG = auto()
     LN = auto()
 
-    # Relational Operators
     EQUAL = auto()
 
-    # Punctuation
     LEFT_PARENTHESIS = auto()
     RIGHT_PARENTHESIS = auto()
     EOF = auto()
 
-    # Mathematical constants
     PI = auto()
     E = auto()
 
