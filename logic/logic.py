@@ -45,7 +45,6 @@ class RungeKutta:
                 y_right[i + 1] = y_right[i] + self.h * (
                     k1 / 6 + k2 / 3 + k3 / 3 + k4 / 6
                 )
-
             # si retorna nan o inf es que dividió por 0 o esta haciendo cosas en lugares indefinidos
             return X_right, y_right
         except:
@@ -59,3 +58,13 @@ class RungeKutta:
         U = 1
         V = self.edo({"x": X, "y": Y})
         return plt.quiver(X, Y, U, V, color="lightgray")
+
+
+h = float(input())
+x0 = int(input())
+y0 = int(input())
+xf = int(input())
+f = input()
+rk = RungeKutta(x0, y0, xf, h, f)
+
+print(rk.ast)

@@ -14,6 +14,7 @@ from astAL import (
     Cot,
     Log,
     Ln,
+    Arctan,
 )
 
 token_to_class = {
@@ -28,6 +29,7 @@ token_to_class = {
     TokenType.COT: Cot,
     TokenType.LOG: Log,
     TokenType.LN: Ln,
+    TokenType.ARCTAN: Arctan,
 }
 
 
@@ -70,6 +72,7 @@ class Parser:
             or tokens[0].token_type == TokenType.COT
             or tokens[0].token_type == TokenType.LN
             or tokens[0].token_type == TokenType.LOG
+            or tokens[0].token_type == TokenType.ARCTAN
         ):
             return token_to_class[tokens[0].token_type](self.make_ast(tokens[1:]), None)
 
