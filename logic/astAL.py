@@ -94,7 +94,7 @@ class Sen(Expression):
         return np.sin(self.left.eval(variables))
 
     def __str__(self) -> str:
-        return f"sin( {self.left} )"
+        return f"sin({self.left})"
 
 
 class Cos(Expression):
@@ -105,7 +105,7 @@ class Cos(Expression):
         return np.cos(self.left.eval(variables))
 
     def __str__(self) -> str:
-        return f"cos( {self.left} )"
+        return f"cos({self.left})"
 
 
 class Tan(Expression):
@@ -116,7 +116,7 @@ class Tan(Expression):
         return np.tan(self.left.eval(variables))
 
     def __str__(self) -> str:
-        return f"tan( {self.left} )"
+        return f"tan({self.left})"
 
 
 class Cot(Expression):
@@ -127,7 +127,7 @@ class Cot(Expression):
         return np.cos(self.left.eval(variables)) / np.sin(self.left.eval(variables))
 
     def __str__(self) -> str:
-        return f"cot( {self.left} )"
+        return f"cot({self.left})"
 
 
 class Ln(Expression):
@@ -138,7 +138,7 @@ class Ln(Expression):
         return np.log(self.left.eval(variables))
 
     def __str__(self) -> str:
-        return f"ln( {self.left} )"
+        return f"ln({self.left})"
 
 
 class Arctan(Expression):
@@ -149,7 +149,31 @@ class Arctan(Expression):
         return np.arctan(self.left.eval(variables))
 
     def __str__(self):
-        return f"arctan( {self.left} )"
+        return f"arctan({self.left})"
+
+
+class Arcsin(Expression):
+
+    def __init__(self, left, right) -> None:
+        super().__init__(left, right)
+
+    def eval(self, variables):
+        return np.arcsin(self.left.eval(variables))
+
+    def __str__(self):
+        return f"arcsin({self.left})"
+
+
+class Arccos(Expression):
+
+    def __init__(self, left, right) -> None:
+        super().__init__(left, right)
+
+    def eval(self, variables):
+        return np.arccos(self.left.eval(variables))
+
+    def __str__(self):
+        return f"arccos({self.left})"
 
 
 class Log(Expression):
@@ -160,4 +184,4 @@ class Log(Expression):
         return np.log10(self.left.eval(variables))
 
     def __str__(self) -> str:
-        return f"log( {self.left} )"
+        return f"log({self.left})"
