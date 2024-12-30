@@ -35,7 +35,8 @@ class TokenType(Enum):
     LOG = auto()
     LN = auto()
     ARCTAN = auto()
-
+    ARCSIN = auto()
+    ARCCOS = auto()
     EQUAL = auto()
 
     LEFT_PARENTHESIS = auto()
@@ -75,6 +76,8 @@ TOKEN_PATTERNS = [
     TokenPattern("\\)", TokenType.RIGHT_PARENTHESIS),
     TokenPattern("pi", TokenType.PI, _NOT_LETTER_OR_UNDERSCORE),
     TokenPattern("e", TokenType.E, _NOT_LETTER_OR_UNDERSCORE),
+    TokenPattern("arcsin", TokenType.ARCSIN, _NOT_LETTER_OR_UNDERSCORE),
+    TokenPattern("arccos", TokenType.ARCCOS, _NOT_LETTER_OR_UNDERSCORE),
     TokenPattern("sen", TokenType.SEN, _NOT_LETTER_OR_UNDERSCORE),
     TokenPattern("cos", TokenType.COS, _NOT_LETTER_OR_UNDERSCORE),
     TokenPattern("tan", TokenType.TAN, _NOT_LETTER_OR_UNDERSCORE),

@@ -35,7 +35,6 @@ class RungeKutta:
             y_right = np.zeros(len(X_right))
 
             y_right[0] = self.y0
-
             #### Runge-Kutta
             for i in range(len(X_right) - 1):
                 k1 = self.edo({"x": X_right[i], "y": y_right[i]})
@@ -58,13 +57,3 @@ class RungeKutta:
         U = 1
         V = self.edo({"x": X, "y": Y})
         return plt.quiver(X, Y, U, V, color="lightgray")
-
-
-h = float(input())
-x0 = int(input())
-y0 = int(input())
-xf = int(input())
-f = input()
-rk = RungeKutta(x0, y0, xf, h, f)
-
-print(rk.ast)

@@ -15,6 +15,8 @@ from astAL import (
     Log,
     Ln,
     Arctan,
+    Arcsin,
+    Arccos,
 )
 
 token_to_class = {
@@ -30,6 +32,8 @@ token_to_class = {
     TokenType.LOG: Log,
     TokenType.LN: Ln,
     TokenType.ARCTAN: Arctan,
+    TokenType.ARCSIN: Arcsin,
+    TokenType.ARCCOS: Arccos,
 }
 
 
@@ -38,56 +42,67 @@ class Parser:
     def make_ast(self, tokens: list[Token]) -> Expression:
         if len(tokens) == 1:
             return Term(tokens[0])
-        self.is_parenthesis_balance(tokens)
 
-        expression: Expression = self.search_expression(tokens, self.is_term)
-        if expression == None:
-            expression: Expression = self.search_expression(tokens, self.is_factor)
-        if expression == None:
-            expression: Expression = self.search_expression(tokens, self.is_power)
+        self.check_parenthesis_balance(tokens)
+
+        expression = self.parse_expression(tokens, self.is_term)
+        if expression is None:
+            expression = self.parse_expression(tokens, self.is_factor)
+        if expression is None:
+            expression = self.parse_expression(tokens, self.is_power)
+        if expression is None:
+            expression = self.parse_expression(tokens, self.is_unary_function)
+
         return expression
 
-    def search_expression(self, tokens: list[Token], func) -> Expression:
+    def parse_expression(self, tokens: list[Token], func) -> Expression:
         balance = 0
-        for i in range(len(tokens)):
-
-            if tokens[i].token_type == TokenType.LEFT_PARENTHESIS:
+        for i, token in enumerate(tokens):
+            if token.token_type == TokenType.LEFT_PARENTHESIS:
                 balance += 1
-            elif tokens[i].token_type == TokenType.RIGHT_PARENTHESIS:
+            elif token.token_type == TokenType.RIGHT_PARENTHESIS:
                 balance -= 1
 
-            if balance == 0 and func(tokens[i]):
-                return token_to_class[tokens[i].token_type](
-                    self.make_ast(tokens[:i]), self.make_ast(tokens[i + 1 :])
+            if balance == 0 and func(token):
+                if self.is_power(token) or self.is_factor(token) or self.is_term(token):
+                    return token_to_class[token.token_type](
+                        self.make_ast(tokens[:i]), self.make_ast(tokens[i + 1 :])
+                    )
+
+                return token_to_class[token.token_type](
+                    self.make_ast(tokens[i + 1 :]), None
                 )
         if (
             tokens[0].token_type == TokenType.LEFT_PARENTHESIS
             and tokens[-1].token_type == TokenType.RIGHT_PARENTHESIS
         ):
             return self.make_ast(tokens[1:-1])
-        if (
-            tokens[0].token_type == TokenType.SEN
-            or tokens[0].token_type == TokenType.COS
-            or tokens[0].token_type == TokenType.TAN
-            or tokens[0].token_type == TokenType.COT
-            or tokens[0].token_type == TokenType.LN
-            or tokens[0].token_type == TokenType.LOG
-            or tokens[0].token_type == TokenType.ARCTAN
-        ):
-            return token_to_class[tokens[0].token_type](self.make_ast(tokens[1:]), None)
 
     def is_term(self, token: Token) -> bool:
-        return token.token_type == TokenType.PLUS or token.token_type == TokenType.MINUS
+        return token.token_type in {TokenType.PLUS, TokenType.MINUS}
 
     def is_factor(self, token: Token) -> bool:
-        return (
-            token.token_type == TokenType.TIMES or token.token_type == TokenType.DIVIDE
-        )
+        return token.token_type in {TokenType.TIMES, TokenType.DIVIDE}
 
     def is_power(self, token: Token) -> bool:
         return token.token_type == TokenType.POWER
 
-    def is_parenthesis_balance(self, tokens: list[Token]) -> None:
+    def is_unary_function(self, token: Token) -> bool:
+
+        return token.token_type in {
+            TokenType.SEN,
+            TokenType.COS,
+            TokenType.TAN,
+            TokenType.COT,
+            TokenType.LN,
+            TokenType.LOG,
+            TokenType.ARCTAN,
+            TokenType.ARCSIN,
+            TokenType.ARCCOS,
+        }
+
+    def check_parenthesis_balance(self, tokens: list[Token]) -> None:
+
         balance = 0
         for token in tokens:
             if token.token_type == TokenType.LEFT_PARENTHESIS:
@@ -95,4 +110,4 @@ class Parser:
             elif token.token_type == TokenType.RIGHT_PARENTHESIS:
                 balance -= 1
         if balance != 0:
-            raise Parentesis_Error("Coloque correctamente los parentesis")
+            raise Parentesis_Error()
