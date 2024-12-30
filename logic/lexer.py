@@ -23,7 +23,6 @@ class TokenType(Enum):
     STRING = auto()
     NUMBER = auto()
 
-    # Arithmetic Operators
     PLUS = auto()
     MINUS = auto()
     TIMES = auto()
@@ -35,16 +34,14 @@ class TokenType(Enum):
     COT = auto()
     LOG = auto()
     LN = auto()
+    ARCTAN = auto()
 
-    # Relational Operators
     EQUAL = auto()
 
-    # Punctuation
     LEFT_PARENTHESIS = auto()
     RIGHT_PARENTHESIS = auto()
     EOF = auto()
 
-    # Mathematical constants
     PI = auto()
     E = auto()
 
@@ -84,6 +81,7 @@ TOKEN_PATTERNS = [
     TokenPattern("cot", TokenType.COT, _NOT_LETTER_OR_UNDERSCORE),
     TokenPattern("ln", TokenType.LN, _NOT_LETTER_OR_UNDERSCORE),
     TokenPattern("log", TokenType.LOG, _NOT_LETTER_OR_UNDERSCORE),
+    TokenPattern("arctan", TokenType.ARCTAN, _NOT_LETTER_OR_UNDERSCORE),
     TokenPattern("[a-zA-Z_]([a-zA-Z_0-9])*", TokenType.IDENTIFIER),
 ]
 

@@ -57,7 +57,7 @@ class Divide(Expression):
 
     def eval(self, variables):
         return self.left.eval(variables) / self.right.eval(variables)
-        
+
     def __str__(self) -> str:
         return f"({self.left} / {self.right})"
 
@@ -123,9 +123,9 @@ class Cot(Expression):
     def __init__(self, left, right) -> None:
         super().__init__(left, right)
 
-    def eval(self, variables):  
+    def eval(self, variables):
         return np.cos(self.left.eval(variables)) / np.sin(self.left.eval(variables))
-        
+
     def __str__(self) -> str:
         return f"cot( {self.left} )"
 
@@ -139,6 +139,17 @@ class Ln(Expression):
 
     def __str__(self) -> str:
         return f"ln( {self.left} )"
+
+
+class Arctan(Expression):
+    def __init__(self, left, right) -> None:
+        super().__init__(left, right)
+
+    def eval(self, variables):
+        return np.arctan(self.left.eval(variables))
+
+    def __str__(self):
+        return f"arctan( {self.left} )"
 
 
 class Log(Expression):
