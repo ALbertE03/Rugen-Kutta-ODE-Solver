@@ -6,6 +6,14 @@
 
 A WebApp that can solve and display solutions to differential equations (ODEs) by using the Runge-Kutta Method.
 
+## Contributors
+
+- [Diego](https://github.com/DJSixHub)
+- [Cristina](https://github.com/Cristinahdzfornaris)
+- [Amalia](https://github.com/AmaliaGlezO)
+- [Angelica](https://github.com/angemaria25)
+- [Alberto](https://github.com/ALbertE03)
+
 ## :hammer: Project Features
 
 - `Functionality 1`: description of functionality 1
