@@ -26,6 +26,7 @@ class RungeKutta:
             raise Parentesis_Error()
 
     def edo(self, vars: dict) -> float:
+
         variables = {"e": 2.718281828459045, "pi": 3.141592653589793}
         for key, value in vars.items():
             variables[key] = value
@@ -55,8 +56,8 @@ class RungeKutta:
 
     def isoclinas(self) -> Quiver:
         X_right = np.arange(self.x0, self.xf, self.h)
-        x_values = np.linspace(-10, 10, 20)
-        y_values = np.linspace(-10, 10, 20)
+        x_values = np.linspace(self.x0, self.xf, 20)
+        y_values = np.linspace(self.x0, self.xf, 20)
         X, Y = np.meshgrid(x_values, y_values)
         U = 1
         V = self.edo({"x": X, "y": Y})
