@@ -88,7 +88,6 @@ class Parser:
         return token.token_type == TokenType.POWER
 
     def is_unary_function(self, token: Token) -> bool:
-
         return token.token_type in {
             TokenType.SEN,
             TokenType.COS,
@@ -102,7 +101,6 @@ class Parser:
         }
 
     def check_parenthesis_balance(self, tokens: list[Token]) -> None:
-
         balance = 0
         for token in tokens:
             if token.token_type == TokenType.LEFT_PARENTHESIS:
