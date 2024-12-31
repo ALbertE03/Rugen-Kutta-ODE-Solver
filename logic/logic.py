@@ -10,19 +10,23 @@ from matplotlib.quiver import Quiver
 
 class RungeKutta:
     def __init__(self, x0: int, y0: int, xf: int, h: float, function: str):
-        self.x0 = x0
-        self.y0 = y0
-        self.h = h
-        self.xf = xf
         try:
+            self.x0 = float(x0)
+            self.y0 = float(y0)
+            self.h = float(h)
+            self.xf = float(xf)
+
             self.lexer = Lexer(TOKEN_PATTERNS, CONSTANTS)
             self.tokens: list[Token] = self.lexer.tokenize(function)
             self.parser = Parser()
             self.ast: Expression = self.parser.make_ast(self.tokens)
+        except ValueError as e:
+            raise ValueError("introduzca valores válidos.")
         except Parentesis_Error as e:
-            raise Parentesis_Error(e.mensaje)
+            raise Parentesis_Error()
 
     def edo(self, vars: dict) -> float:
+
         variables = {"e": 2.718281828459045, "pi": 3.141592653589793}
         for key, value in vars.items():
             variables[key] = value
@@ -44,15 +48,16 @@ class RungeKutta:
                 y_right[i + 1] = y_right[i] + self.h * (
                     k1 / 6 + k2 / 3 + k3 / 3 + k4 / 6
                 )
-            # si retorna nan o inf es que dividió por 0 o esta haciendo cosas en lugares indefinidos
+            if any(np.isinf(y_right)) or any(np.isnan(y_right)):
+                raise Inf()
             return X_right, y_right
-        except:
+        except RK_Error as e:
             raise RK_Error()
 
     def isoclinas(self) -> Quiver:
         X_right = np.arange(self.x0, self.xf, self.h)
-        x_values = np.linspace(-10, 10, 20)
-        y_values = np.linspace(-10, 10, 20)
+        x_values = np.linspace(self.x0, self.xf, 20)
+        y_values = np.linspace(self.x0, self.xf, 20)
         X, Y = np.meshgrid(x_values, y_values)
         U = 1
         V = self.edo({"x": X, "y": Y})
