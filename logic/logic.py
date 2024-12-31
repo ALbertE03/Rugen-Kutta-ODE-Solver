@@ -51,7 +51,7 @@ class RungeKutta:
             if any(np.isinf(y_right)) or any(np.isnan(y_right)):
                 raise Inf()
             return X_right, y_right
-        except RK_Error as e:
+        except:
             raise RK_Error()
 
     def isoclinas(self) -> Quiver:
@@ -61,4 +61,7 @@ class RungeKutta:
         X, Y = np.meshgrid(x_values, y_values)
         U = 1
         V = self.edo({"x": X, "y": Y})
+        aux = V.copy().flatten()
+        if any(np.isinf(aux)) or any(np.isnan(aux)):
+            raise Inf()
         return plt.quiver(X, Y, U, V, color="lightgray")
