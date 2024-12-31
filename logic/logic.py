@@ -11,14 +11,14 @@ from matplotlib.quiver import Quiver
 class RungeKutta:
     def __init__(self, x0: int, y0: int, xf: int, h: float, function: str):
         try:
-            self.x0 = float(x0)
-            self.y0 = float(y0)
-            self.h = float(h)
-            self.xf = float(xf)
+            self.x0: float = float(x0)
+            self.y0: float = float(y0)
+            self.h: float = float(h)
+            self.xf: float = float(xf)
 
-            self.lexer = Lexer(TOKEN_PATTERNS, CONSTANTS)
+            self.lexer: Lexer = Lexer(TOKEN_PATTERNS, CONSTANTS)
             self.tokens: list[Token] = self.lexer.tokenize(function)
-            self.parser = Parser()
+            self.parser: Parser = Parser()
             self.ast: Expression = self.parser.make_ast(self.tokens)
         except ValueError as e:
             raise ValueError("introduzca valores válidos.")
@@ -51,7 +51,7 @@ class RungeKutta:
             if any(np.isinf(y_right)) or any(np.isnan(y_right)):
                 raise Inf()
             return X_right, y_right
-        except RK_Error as e:
+        except:
             raise RK_Error()
 
     def isoclinas(self) -> Quiver:
@@ -61,4 +61,7 @@ class RungeKutta:
         X, Y = np.meshgrid(x_values, y_values)
         U = 1
         V = self.edo({"x": X, "y": Y})
+        aux = V.copy().flatten()
+        if any(np.isinf(aux)) or any(np.isnan(aux)):
+            raise Inf()
         return plt.quiver(X, Y, U, V, color="lightgray")
