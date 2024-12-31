@@ -55,3 +55,7 @@ Before running the project, make sure you have Python installed on your system. 
 ### Installation of Dependencies
 
 Once you have Python installed, make sure to install the dependencies required for this project:
+
+```
+pip install -r requirements.txt
+```
