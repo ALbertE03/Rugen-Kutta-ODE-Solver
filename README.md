@@ -1,14 +1,15 @@
-<h1 align="center"> Runge-Kutta-ODE-Solver </h1>
-![Forks](https://img.shields.io/github/forks/DJSixHub/Runge-Kutta-ODE-Solver?style=social)
+# Runge-Kutta-ODE-Solver
 
-A WebApp than can solve and display solutions to differential equations (ODEs) by using the Runge-Kutta Method.
+![Forks](https://img.shields.io/github/forks/DJSixHub/Runge-Kutta-ODE-Solver?style=social)
+![Stars](https://img.shields.io/github/stars/DJSixHub/Runge-Kutta-ODE-Solver?style=social)
+![Issues](https://img.shields.io/github/issues/DJSixHub/Runge-Kutta-ODE-Solver?style=social)
+
+A WebApp that can solve and display solutions to differential equations (ODEs) by using the Runge-Kutta Method.
 
 ## :hammer: Project Features
 
 - `Functionality 1`: description of functionality 1
-
 - `Functionality 2`: description of functionality 2
-
 - `Functionality 3`: description of functionality 3
 
 ## 🛠️ Open and run the project
@@ -54,13 +55,3 @@ Before running the project, make sure you have Python installed on your system. 
 ### Installation of Dependencies
 
 Once you have Python installed, make sure to install the dependencies required for this project:
-
-```
-pip install -r requirements.txt
-```
-
-### Run the Project
-
-```
-streamlit run EDO-Project.py
-```
