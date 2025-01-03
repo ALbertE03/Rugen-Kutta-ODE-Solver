@@ -54,14 +54,15 @@ class RungeKutta:
         except:
             raise RK_Error()
 
-    def isoclinas(self) -> Quiver:
-        X_right = np.arange(self.x0, self.xf, self.h)
-        x_values = np.linspace(self.x0, self.xf, 20)
-        y_values = np.linspace(self.x0, self.xf, 20)
+    def isoclinas(self, x_min, x_max, y_min, y_max):
+        x_values = np.linspace(x_min, x_max, 25)  
+        y_values = np.linspace(y_min, y_max, 25)
         X, Y = np.meshgrid(x_values, y_values)
-        U = 1
-        V = self.edo({"x": X, "y": Y})
+        U = np.ones_like(X)
+        V = self.edo({"x": X, "y": Y})  
         aux = V.copy().flatten()
         if any(np.isinf(aux)) or any(np.isnan(aux)):
             raise Inf()
-        return plt.quiver(X, Y, U, V, color="lightgray")
+        return X.flatten().tolist(), Y.flatten().tolist(), U.flatten().tolist(), V.flatten().tolist()
+
+

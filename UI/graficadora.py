@@ -1,13 +1,13 @@
 import streamlit as st
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 import sys
 import os
+import pandas as pd
+import altair as alt
 
 # Agrega la ruta dinámica del directorio 'logic' para importar las clases necesarias
 script_dir = os.path.dirname(__file__)
-logic_dir = os.path.join(script_dir, '..', 'logic')
+logic_dir = os.path.join(script_dir, '.', 'logic')
 sys.path.append(logic_dir)
 
 from logic import RungeKutta  # Importa RungeKutta
@@ -15,7 +15,7 @@ from error import Parentesis_Error, RK_Error, Inf  # Importa las excepciones per
 
 st.subheader("Graficadora")
 
-# División de columnas para la interfaz
+
 input_col, plot_col = st.columns([1, 2])
 
 with input_col:
@@ -35,17 +35,44 @@ with input_col:
             try:
                 rk_solver = RungeKutta(x0, y0, xf, h, equation_str)
                 X, Y = rk_solver.solver()
+
+                x_min, x_max = x0, xf
+                y_min, y_max = min(Y), max(Y)
+                
+                X_iso, Y_iso, U_iso, V_iso = rk_solver.isoclinas(x_min, x_max, y_min, y_max)
                 
                 with plot_col:
-                    # Graficar la solución con Seaborn
-                    sns.set(style="whitegrid")
-                    plt.figure(figsize=(10, 6))
-                    sns.lineplot(x=X, y=Y, label="Solución RK", marker="o")
-                    plt.xlabel("x")
-                    plt.ylabel("y")
-                    plt.legend()
-                    plt.grid(True)
-                    st.pyplot(plt.gcf())
+                    
+                    line_data = pd.DataFrame({'x': X, 'y': Y})
+                    quiver_data = pd.DataFrame({
+                        'x': X_iso,
+                        'y': Y_iso,
+                        'u': U_iso,
+                        'v': V_iso
+                    })
+
+                    
+                    line_chart = alt.Chart(line_data).mark_line().encode(
+                        x=alt.X('x:Q', scale=alt.Scale(domain=(x_min, x_max))), 
+                        y=alt.Y('y:Q', scale=alt.Scale(domain=(y_min, y_max))) 
+                    )
+                    
+                    
+                    arrow_length = 0.1 
+                    quiver_data['x2'] = quiver_data['x'] + quiver_data['u'] * arrow_length
+                    quiver_data['y2'] = quiver_data['y'] + quiver_data['v'] * arrow_length
+
+                    arrows = alt.Chart(quiver_data).mark_line(color='red').encode(
+                        x='x:Q',
+                        y='y:Q',
+                        x2='x2:Q',
+                        y2='y2:Q'
+                    )
+                    
+                    # Combinar ambos gráficos
+                    combined_chart = alt.layer(line_chart, arrows).properties(width=600, height=400)
+                    st.altair_chart(combined_chart, use_container_width=True)
+                    
             except ValueError as e:
                 st.error(f"Error: {e}")
             except Parentesis_Error as e:
