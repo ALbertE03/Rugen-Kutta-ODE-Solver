@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide")  # Asegúrate de que esto sea el primer comando de Streamlit
 
 st.title("Proyecto de Ecuaciones Diferenciales Ordinarias")
 st.markdown("<hr>", unsafe_allow_html=True)
@@ -12,23 +12,10 @@ with st.sidebar:
     option = st.radio("Selecciona una opción:", ["Graficadora", "Informe", "Acerca de"])
 
 if option == "Graficadora":
-    
-    st.subheader("Graficadora")
-    
-    interface_path = './UI/interface.py'
-    
-    with open(interface_path, 'r') as file:
-        code = file.read()
-        
-    exec(code)
-    
-    
-    
+    # Leer el contenido de graficadora.py y ejecutarlo
+    with open(os.path.join('UI', 'graficadora.py'), 'r', encoding='utf-8') as file:
+        exec(file.read())
 elif option == "Informe":
     st.subheader("Informe")
-    
-elif option == "Acerca de:":
+elif option == "Acerca de":
     st.subheader("Acerca de")
-    
-
-
