@@ -1,17 +1,23 @@
 import streamlit as st
 import numpy as np
+
 import seaborn as sns
 import matplotlib.pyplot as plt
-import sys
+
+# import sys
 import os
 
 # Agrega la ruta dinámica del directorio 'logic' para importar las clases necesarias
-script_dir = os.path.dirname(__file__)
-logic_dir = os.path.join(script_dir, '..', 'logic')
-sys.path.append(logic_dir)
+# script_dir = os.path.dirname(__file__)
+# logic_dir = os.path.join(script_dir, ".", "logic")
+# sys.path.append(logic_dir)
 
-from logic import RungeKutta  # Importa RungeKutta
-from error import Parentesis_Error, RK_Error, Inf  # Importa las excepciones personalizadas
+from logic.logic import RungeKutta  # Importa RungeKutta
+from logic.error import (
+    Parentesis_Error,
+    RK_Error,
+    Inf,
+)  # Importa las excepciones personalizadas
 
 st.subheader("Graficadora")
 
@@ -19,7 +25,9 @@ st.subheader("Graficadora")
 input_col, plot_col = st.columns([1, 2])
 
 with input_col:
-    equation_str = st.text_area("Ingresa la ecuación diferencial (ej. 'dy/dx = -2*x*y'):", "")
+    equation_str = st.text_area(
+        "Ingresa la ecuación diferencial (ej. 'dy/dx = -2*x*y'):", ""
+    )
 
     col1, col2 = st.columns(2)
     with col1:
@@ -29,13 +37,13 @@ with input_col:
 
     h = st.number_input("Paso de integración (h):", value=0.1)
     xf = st.number_input("Valor final de x (xf):", value=10.0)
-
     if st.button("Resolver"):
+
         if equation_str:
             try:
                 rk_solver = RungeKutta(x0, y0, xf, h, equation_str)
+                print("ast parseado:", rk_solver.ast)
                 X, Y = rk_solver.solver()
-                
                 with plot_col:
                     # Graficar la solución con Seaborn
                     sns.set(style="whitegrid")

@@ -1,4 +1,4 @@
-from lexer import Token
+from logic.lexer import Token
 
 import numpy as np
 
@@ -13,7 +13,7 @@ class Term:
         return float(self.term.lex)
 
     def __str__(self) -> str:
-        return f"{self.term.token_type}"
+        return f"{self.term.lex}"
 
 
 class Expression:

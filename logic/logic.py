@@ -1,15 +1,22 @@
-from astAL import Expression
-from lexer import Lexer, TOKEN_PATTERNS, CONSTANTS, Token
-from parser import Parser
+from logic.astAL import Expression
+from logic.lexer import Lexer, TOKEN_PATTERNS, CONSTANTS, Token
+from logic.parser import Parser
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple, List
-from error import *
+from logic.error import *
 from matplotlib.quiver import Quiver
 
 
 class RungeKutta:
-    def __init__(self, x0: int, y0: int, xf: int, h: float, function: str):
+    def __init__(
+        self,
+        x0: int | float,
+        y0: int | float,
+        xf: int | float,
+        h: int | float,
+        function: str,
+    ):
         try:
             self.x0: float = float(x0)
             self.y0: float = float(y0)
@@ -48,6 +55,7 @@ class RungeKutta:
                 y_right[i + 1] = y_right[i] + self.h * (
                     k1 / 6 + k2 / 3 + k3 / 3 + k4 / 6
                 )
+            print("Y calculada con rk=", y_right)
             if any(np.isinf(y_right)) or any(np.isnan(y_right)):
                 raise Inf()
             return X_right, y_right

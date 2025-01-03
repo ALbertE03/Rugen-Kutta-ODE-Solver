@@ -1,7 +1,10 @@
 import streamlit as st
 import os
 
-st.set_page_config(layout="wide")  # Asegúrate de que esto sea el primer comando de Streamlit
+
+st.set_page_config(
+    layout="wide"
+)  # Asegúrate de que esto sea el primer comando de Streamlit
 
 st.title("Proyecto de Ecuaciones Diferenciales Ordinarias")
 st.markdown("<hr>", unsafe_allow_html=True)
@@ -13,7 +16,7 @@ with st.sidebar:
 
 if option == "Graficadora":
     # Leer el contenido de graficadora.py y ejecutarlo
-    with open(os.path.join('UI', 'graficadora.py'), 'r', encoding='utf-8') as file:
+    with open(os.path.join("UI", "graficadora.py"), "r", encoding="utf-8") as file:
         exec(file.read())
 elif option == "Informe":
     st.subheader("Informe")

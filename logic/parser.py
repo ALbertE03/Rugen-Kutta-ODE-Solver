@@ -1,6 +1,6 @@
-from lexer import Token, TokenType
-from error import Parentesis_Error
-from astAL import (
+from logic.lexer import Token, TokenType
+from logic.error import Parentesis_Error
+from logic.astAL import (
     Expression,
     Term,
     Plus,
