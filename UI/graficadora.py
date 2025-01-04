@@ -1,22 +1,14 @@
 import streamlit as st
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-import sys
 import os
 import pandas as pd
 import altair as alt
-
-# Agrega la ruta dinámica del directorio 'logic' para importar las clases necesarias
-script_dir = os.path.dirname(__file__)
-logic_dir = os.path.join(script_dir, ".", "logic")
-sys.path.append(logic_dir)
-
 from logic.logic import RungeKutta  # Importa RungeKutta
 from logic.error import (
     Parentesis_Error,
     RK_Error,
     Inf,
+    SEL,
 )  # Importa las excepciones personalizadas
 
 st.subheader("Graficadora")
@@ -37,21 +29,18 @@ with input_col:
 
     h = st.number_input("Paso de integración (h):", value=0.1)
     xf = st.number_input("Valor final de x (xf):", value=10.0)
-    if st.button("Resolver"):
 
+    if st.button("Resolver"):
         if equation_str:
             try:
                 rk_solver = RungeKutta(x0, y0, xf, h, equation_str)
-                print("ast parseado:", rk_solver.ast)
+                print(rk_solver.ast)
                 X, Y = rk_solver.solver()
-
                 x_min, x_max = x0, xf
                 y_min, y_max = min(Y), max(Y)
-
                 X_iso, Y_iso, U_iso, V_iso = rk_solver.isoclinas(
                     x_min, x_max, y_min, y_max
                 )
-
                 with plot_col:
 
                     line_data = pd.DataFrame({"x": X, "y": Y})

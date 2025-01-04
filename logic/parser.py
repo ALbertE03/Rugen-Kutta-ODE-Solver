@@ -1,4 +1,4 @@
-from logic.lexer import Token, TokenType
+from logic.lexer import Token, TokenType, Lexer, CONSTANTS, TOKEN_PATTERNS
 from logic.error import Parentesis_Error
 from logic.astAL import (
     Expression,
@@ -44,34 +44,36 @@ class Parser:
             return Term(tokens[0])
 
         self.check_parenthesis_balance(tokens)
-
-        expression = self.parse_expression(tokens, self.is_term)
-        if expression is None:
-            expression = self.parse_expression(tokens, self.is_factor)
-        if expression is None:
-            expression = self.parse_expression(tokens, self.is_power)
-        if expression is None:
-            expression = self.parse_expression(tokens, self.is_unary_function)
-
+        expression = self.parse_expression(tokens)
         return expression
 
-    def parse_expression(self, tokens: list[Token], func) -> Expression:
+    def parse_expression(self, tokens: list[Token]) -> Expression:
         balance = 0
-        for i, token in enumerate(tokens):
-            if token.token_type == TokenType.LEFT_PARENTHESIS:
-                balance += 1
-            elif token.token_type == TokenType.RIGHT_PARENTHESIS:
-                balance -= 1
+        for func in [
+            self.is_power,
+            self.is_factor,
+            self.is_term,
+            self.is_unary_function,
+        ]:
+            for i, token in enumerate(tokens):
+                if token.token_type == TokenType.LEFT_PARENTHESIS:
+                    balance += 1
+                elif token.token_type == TokenType.RIGHT_PARENTHESIS:
+                    balance -= 1
 
-            if balance == 0 and func(token):
-                if self.is_power(token) or self.is_factor(token) or self.is_term(token):
+                if balance == 0 and func(token):
+                    if (
+                        self.is_power(token)
+                        or self.is_factor(token)
+                        or self.is_term(token)
+                    ):
+                        return token_to_class[token.token_type](
+                            self.make_ast(tokens[:i]), self.make_ast(tokens[i + 1 :])
+                        )
+
                     return token_to_class[token.token_type](
-                        self.make_ast(tokens[:i]), self.make_ast(tokens[i + 1 :])
+                        self.make_ast(tokens[i + 1 :]), None
                     )
-
-                return token_to_class[token.token_type](
-                    self.make_ast(tokens[i + 1 :]), None
-                )
         if (
             tokens[0].token_type == TokenType.LEFT_PARENTHESIS
             and tokens[-1].token_type == TokenType.RIGHT_PARENTHESIS
@@ -88,7 +90,7 @@ class Parser:
         return token.token_type == TokenType.POWER
 
     def is_unary_function(self, token: Token) -> bool:
-        return token.token_type in {
+        return token.token_type in [
             TokenType.SEN,
             TokenType.COS,
             TokenType.TAN,
@@ -98,7 +100,7 @@ class Parser:
             TokenType.ARCTAN,
             TokenType.ARCSIN,
             TokenType.ARCCOS,
-        }
+        ]
 
     def check_parenthesis_balance(self, tokens: list[Token]) -> None:
         balance = 0

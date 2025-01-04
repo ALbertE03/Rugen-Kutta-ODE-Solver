@@ -20,3 +20,14 @@ Porfavor introduzca otro intervalo.""",
     ):
         self.mensaje = mensaje
         super().__init__(self.mensaje)
+
+
+class SEL(Exception):
+    def __init__(
+        self,
+        mensaje="""
+    escriba 2 escuaciones
+    """,
+    ):
+        self.mensaje = mensaje
+        super().__init__(self.mensaje)
