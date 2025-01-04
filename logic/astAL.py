@@ -1,4 +1,4 @@
-from lexer import Token
+from logic.lexer import Token
 
 import numpy as np
 
@@ -13,7 +13,10 @@ class Term:
         return float(self.term.lex)
 
     def __str__(self) -> str:
-        return f"{self.term.token_type}"
+        return f"{self.term.lex}"
+
+    def __bool__(self):
+        return self.term is not None
 
 
 class Expression:
@@ -24,6 +27,9 @@ class Expression:
 
     def eval(self):
         pass
+
+    def __bool__(self):
+        return self.left is not None and self.right is not None
 
 
 class Plus(Expression):
@@ -37,6 +43,9 @@ class Plus(Expression):
     def __str__(self) -> str:
         return f"({self.left} + {self.right})"
 
+    def __bool__(self):
+        return super().__bool__()
+
 
 class Minus(Expression):
 
@@ -48,6 +57,9 @@ class Minus(Expression):
 
     def __str__(self) -> str:
         return f"({self.left} - {self.right})"
+
+    def __bool__(self):
+        return super().__bool__()
 
 
 class Divide(Expression):
@@ -61,6 +73,9 @@ class Divide(Expression):
     def __str__(self) -> str:
         return f"({self.left} / {self.right})"
 
+    def __bool__(self):
+        return super().__bool__()
+
 
 class Times(Expression):
 
@@ -72,6 +87,9 @@ class Times(Expression):
 
     def __str__(self) -> str:
         return f"({self.left} * {self.right})"
+
+    def __bool__(self):
+        return super().__bool__()
 
 
 class Power(Expression):
@@ -85,6 +103,9 @@ class Power(Expression):
     def __str__(self) -> str:
         return f"({self.left} ^ {self.right})"
 
+    def __bool__(self):
+        return super().__bool__()
+
 
 class Sen(Expression):
     def __init__(self, left, right) -> None:
@@ -95,6 +116,9 @@ class Sen(Expression):
 
     def __str__(self) -> str:
         return f"sin({self.left})"
+
+    def __bool__(self):
+        return super().__bool__()
 
 
 class Cos(Expression):
@@ -107,6 +131,9 @@ class Cos(Expression):
     def __str__(self) -> str:
         return f"cos({self.left})"
 
+    def __bool__(self):
+        return super().__bool__()
+
 
 class Tan(Expression):
     def __init__(self, left, right) -> None:
@@ -117,6 +144,9 @@ class Tan(Expression):
 
     def __str__(self) -> str:
         return f"tan({self.left})"
+
+    def __bool__(self):
+        return super().__bool__()
 
 
 class Cot(Expression):
@@ -129,6 +159,9 @@ class Cot(Expression):
     def __str__(self) -> str:
         return f"cot({self.left})"
 
+    def __bool__(self):
+        return super().__bool__()
+
 
 class Ln(Expression):
     def __init__(self, left, right) -> None:
@@ -140,6 +173,9 @@ class Ln(Expression):
     def __str__(self) -> str:
         return f"ln({self.left})"
 
+    def __bool__(self):
+        return super().__bool__()
+
 
 class Arctan(Expression):
     def __init__(self, left, right) -> None:
@@ -150,6 +186,9 @@ class Arctan(Expression):
 
     def __str__(self):
         return f"arctan({self.left})"
+
+    def __bool__(self):
+        return super().__bool__()
 
 
 class Arcsin(Expression):
@@ -163,6 +202,9 @@ class Arcsin(Expression):
     def __str__(self):
         return f"arcsin({self.left})"
 
+    def __bool__(self):
+        return super().__bool__()
+
 
 class Arccos(Expression):
 
@@ -175,6 +217,9 @@ class Arccos(Expression):
     def __str__(self):
         return f"arccos({self.left})"
 
+    def __bool__(self):
+        return super().__bool__()
+
 
 class Log(Expression):
     def __init__(self, left, right) -> None:
@@ -185,3 +230,6 @@ class Log(Expression):
 
     def __str__(self) -> str:
         return f"log({self.left})"
+
+    def __bool__(self):
+        return super().__bool__()
