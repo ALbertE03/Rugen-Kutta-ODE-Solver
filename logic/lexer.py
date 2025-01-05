@@ -1,5 +1,6 @@
 from enum import Enum, auto
 import re
+from logic.error import TokenError
 
 
 class Token:
@@ -127,7 +128,7 @@ class Lexer:
 
                     break
             else:
-                print("No se reconoce el token")
+                raise TokenError()
 
         token_expression: list[Token] = []
         we_are_in_the_right_member = False
@@ -145,8 +146,41 @@ class Lexer:
             if response and add_times(response, token):
                 response.append(Token(lex="*", token_type=TokenType.TIMES))
             response.append(token)
+        end: list[Token] = []
+        i = 0
 
-        return response
+        while i < len(response):
+            if response[i].token_type == TokenType.MINUS:
+
+                if i + 1 < len(response) and i - 1 >= 0:
+                    if check_token(response, i + 1) and check_token(response, i - 1):
+                        end.append(response[i])
+                        i += 1
+                        continue
+                    elif check_token(response, i + 1):
+                        end.append(
+                            Token(lex="(", token_type=TokenType.LEFT_PARENTHESIS)
+                        )
+                        end.append(Token(lex="-1", token_type=TokenType.NUMBER))
+                        end.append(Token(lex="*", token_type=TokenType.TIMES))
+                        end.append(response[i + 1])
+                        end.append(
+                            Token(lex=")", token_type=TokenType.RIGHT_PARENTHESIS)
+                        )
+                        i += 2
+                        continue
+                elif i + 1 < len(response):
+                    end.append(Token(lex="(", token_type=TokenType.LEFT_PARENTHESIS))
+                    end.append(Token(lex="-1", token_type=TokenType.NUMBER))
+                    end.append(Token(lex="*", token_type=TokenType.TIMES))
+                    end.append(response[i + 1])
+                    end.append(Token(lex=")", token_type=TokenType.RIGHT_PARENTHESIS))
+                    i += 2
+                    continue
+
+            end.append(response[i])
+            i += 1
+        return end
 
 
 def add_times(response, token):
@@ -163,4 +197,19 @@ def add_times(response, token):
         and token.token_type == TokenType.NUMBER
         or response[-1].token_type == TokenType.RIGHT_PARENTHESIS
         and token.token_type == TokenType.IDENTIFIER
+    )
+
+
+def check_token(response, i):
+    return (
+        response[i].token_type == TokenType.NUMBER
+        or response[i].token_type == TokenType.IDENTIFIER
+        or response[i].token_type == TokenType.ARCCOS
+        or response[i].token_type == TokenType.ARCSIN
+        or response[i].token_type == TokenType.ARCTAN
+        or response[i].token_type == TokenType.COS
+        or response[i].token_type == TokenType.COT
+        or response[i].token_type == TokenType.LN
+        or response[i].token_type == TokenType.SEN
+        or response[i].token_type == TokenType.LOG
     )

@@ -22,6 +22,12 @@ Porfavor introduzca otro intervalo.""",
         super().__init__(self.mensaje)
 
 
+class TokenError(Exception):
+    def __init__(self, mensaje="Existe un token inválido en la función."):
+        self.mensaje = mensaje
+        super().__init__(self.mensaje)
+
+
 class SEL(Exception):
     def __init__(
         self,
