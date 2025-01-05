@@ -158,6 +158,30 @@ class Lexer:
                         i += 1
                         continue
                     elif check_token(response, i + 1):
+                        if check_func(response, i + 1):
+                            end.append(Token(lex="-1", token_type=TokenType.NUMBER))
+                            end.append(Token(lex="*", token_type=TokenType.TIMES))
+                            i += 1
+                            continue
+                        else:
+                            end.append(
+                                Token(lex="(", token_type=TokenType.LEFT_PARENTHESIS)
+                            )
+                            end.append(Token(lex="-1", token_type=TokenType.NUMBER))
+                            end.append(Token(lex="*", token_type=TokenType.TIMES))
+                            end.append(response[i + 1])
+                            end.append(
+                                Token(lex=")", token_type=TokenType.RIGHT_PARENTHESIS)
+                            )
+                            i += 2
+                            continue
+                elif i + 1 < len(response):
+                    if check_func(response, i + 1):
+                        end.append(Token(lex="-1", token_type=TokenType.NUMBER))
+                        end.append(Token(lex="*", token_type=TokenType.TIMES))
+                        i += 1
+                        continue
+                    else:
                         end.append(
                             Token(lex="(", token_type=TokenType.LEFT_PARENTHESIS)
                         )
@@ -168,14 +192,6 @@ class Lexer:
                             Token(lex=")", token_type=TokenType.RIGHT_PARENTHESIS)
                         )
                         i += 2
-                        continue
-                elif i + 1 < len(response):
-                    end.append(Token(lex="(", token_type=TokenType.LEFT_PARENTHESIS))
-                    end.append(Token(lex="-1", token_type=TokenType.NUMBER))
-                    end.append(Token(lex="*", token_type=TokenType.TIMES))
-                    end.append(response[i + 1])
-                    end.append(Token(lex=")", token_type=TokenType.RIGHT_PARENTHESIS))
-                    i += 2
                     continue
 
             end.append(response[i])
@@ -197,6 +213,20 @@ def add_times(response, token):
         and token.token_type == TokenType.NUMBER
         or response[-1].token_type == TokenType.RIGHT_PARENTHESIS
         and token.token_type == TokenType.IDENTIFIER
+    )
+
+
+def check_func(response, i):
+    return (
+        response[i].token_type == TokenType.IDENTIFIER
+        or response[i].token_type == TokenType.ARCCOS
+        or response[i].token_type == TokenType.ARCSIN
+        or response[i].token_type == TokenType.ARCTAN
+        or response[i].token_type == TokenType.COS
+        or response[i].token_type == TokenType.COT
+        or response[i].token_type == TokenType.LN
+        or response[i].token_type == TokenType.SEN
+        or response[i].token_type == TokenType.LOG
     )
 
 
