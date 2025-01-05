@@ -19,9 +19,7 @@ class RungeKutta:
         SEL_function: List[str] = None,
     ):
         try:
-            self.sel: List[str, str] = (
-                SEL_function if SEL_function is not None else None
-            )
+            self.sel: List[str] = SEL_function if SEL_function is not None else None
             self.x0: float = float(x0)
             self.y0: float = float(y0)
             self.h: float = float(h)
