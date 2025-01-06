@@ -62,6 +62,20 @@ class Minus(Expression):
         return super().__bool__()
 
 
+class Negative(Expression):
+    def __init__(self, left, right) -> None:
+        super().__init__(left, right)
+
+    def eval(self, variables: dict):
+        return -1 * self.right.eval(variables)
+
+    def __str__(self) -> str:
+        return f"-{self.right}"
+
+    def __bool__(self):
+        return super().__bool__()
+
+
 class Divide(Expression):
 
     def __init__(self, left, right) -> None:
