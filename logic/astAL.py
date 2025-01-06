@@ -1,6 +1,9 @@
 from logic.lexer import Token
-
+import warnings
 import numpy as np
+from logic.error import LnLog
+
+warnings.simplefilter("error", RuntimeWarning)
 
 
 class Term:
@@ -82,7 +85,12 @@ class Divide(Expression):
         super().__init__(left, right)
 
     def eval(self, variables):
-        return self.left.eval(variables) / self.right.eval(variables)
+        try:
+            return self.left.eval(variables) / self.right.eval(variables)
+        except ZeroDivisionError as e:
+            raise ZeroDivisionError()
+        except RuntimeWarning as e:
+            raise ZeroDivisionError()
 
     def __str__(self) -> str:
         return f"({self.left} / {self.right})"
@@ -112,7 +120,10 @@ class Power(Expression):
         super().__init__(left, right)
 
     def eval(self, variables):
-        return self.left.eval(variables) ** self.right.eval(variables)
+        try:
+            return self.left.eval(variables) ** self.right.eval(variables)
+        except RuntimeWarning as e:
+            raise RuntimeWarning()
 
     def __str__(self) -> str:
         return f"({self.left} ^ {self.right})"
@@ -182,7 +193,10 @@ class Ln(Expression):
         super().__init__(left, right)
 
     def eval(self, variables):
-        return np.log(self.left.eval(variables))
+        try:
+            return np.log(self.left.eval(variables))
+        except:
+            raise LnLog()
 
     def __str__(self) -> str:
         return f"ln({self.left})"
@@ -240,7 +254,10 @@ class Log(Expression):
         super().__init__(left, right)
 
     def eval(self, variables):
-        return np.log10(self.left.eval(variables))
+        try:
+            return np.log10(self.left.eval(variables))
+        except:
+            raise LnLog()
 
     def __str__(self) -> str:
         return f"log({self.left})"

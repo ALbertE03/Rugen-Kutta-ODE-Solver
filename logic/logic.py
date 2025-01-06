@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from typing import Tuple, List
 from logic.error import *
 from matplotlib.quiver import Quiver
+import warnings
 
 
 class RungeKutta:
@@ -57,13 +58,23 @@ class RungeKutta:
                 y_right[i + 1] = y_right[i] + self.h * (
                     k1 / 6 + k2 / 3 + k3 / 3 + k4 / 6
                 )
-            # print(
-            #    "Y calculada con rk=", y_right
-            # )  # si hay 1 nan o inf va a devolver un error
+            print(
+                "Y calculada con rk=", y_right
+            )  # si hay 1 nan o inf va a devolver un error
             if any(np.isinf(y_right)) or any(np.isnan(y_right)):
                 raise Inf()
             return X_right, y_right
-        except:
+        except LnLog as e:
+            raise LnLog(e.mensaje)
+        except ZeroDivisionError as e:
+            raise ZeroDivisionError(
+                "En este intervalo la función no se encuentra definida"
+            )
+        except RuntimeWarning as e:
+            raise RuntimeWarning(
+                "Esta función alcanza valores muy altos en este intervalo."
+            )  ## esto es que alcanza valores muy altoss en ese intervalo.. no se debe mostrar
+        except Exception as e:
             raise RK_Error()
 
     def isoclinas(self, x_min, x_max, y_min, y_max):
@@ -74,9 +85,9 @@ class RungeKutta:
         V = self.edo({"x": X, "y": Y})
         aux = V.copy().flatten()
         print("################")
-        # print(
-        #    "esta es la Y de las isoclinas", aux
-        # )  ### si hay aunque sea 1 nan o inf va a dar devolver un error
+        print(
+            "esta es la Y de las isoclinas", aux
+        )  ### si hay aunque sea 1 nan o inf va a dar devolver un error
         if any(np.isinf(aux)) or any(np.isnan(aux)):
             raise Inf()
         return (

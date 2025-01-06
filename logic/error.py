@@ -37,3 +37,14 @@ class SEL(Exception):
     ):
         self.mensaje = mensaje
         super().__init__(self.mensaje)
+
+
+class LnLog(Exception):
+
+    def __init__(
+        self,
+        mensaje="""En este intervalo el Logaritmo no se encuentra definido
+    """,
+    ):
+        self.mensaje = mensaje
+        super().__init__(self.mensaje)

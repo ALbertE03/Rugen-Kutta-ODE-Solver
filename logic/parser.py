@@ -50,54 +50,70 @@ class Parser:
         return expression
 
     def parse_expression(self, tokens: list[Token]) -> Expression:
-        balance = 0
+        return self.parse_term(tokens)
 
-        for fun in {
-            self.is_term,
-            self.is_factor,
-            self.is_power,
-            self.is_unary_function,
-        }:
-            for i, token in enumerate(tokens):
+    def parse_term(self, tokens: list[Token]) -> Expression:
+        left = self.parse_factor(tokens)
 
-                if token.token_type == TokenType.LEFT_PARENTHESIS:
-                    balance += 1
-                elif token.token_type == TokenType.RIGHT_PARENTHESIS:
-                    balance -= 1
+        while tokens and tokens[0].token_type in {TokenType.PLUS, TokenType.MINUS}:
+            operator = tokens.pop(0)
+            right = self.parse_factor(tokens)
+            left = token_to_class[operator.token_type](left, right)
 
-                if balance == 0 and fun(token):
-                    if token.token_type == TokenType.MINUS and i == 0:
+        return left
 
-                        return Negative(None, self.make_ast(tokens[1:]))
+    def parse_factor(self, tokens: list[Token]) -> Expression:
+        left = self.parse_power(tokens)
 
-                    if (
-                        self.is_term(token)
-                        or self.is_factor(token)
-                        or self.is_power(token)
-                    ):
-                        return token_to_class[token.token_type](
-                            self.make_ast(tokens[:i]), self.make_ast(tokens[i + 1 :])
-                        )
+        while tokens and self.is_factor(tokens[0]):
+            operator = tokens.pop(0)
+            right = self.parse_power(tokens)
+            left = token_to_class[operator.token_type](left, right)
 
-                    if self.is_unary_function(token):
-                        return token_to_class[token.token_type](
-                            self.make_ast(tokens[i + 2 : -1]), None
-                        )
+        return left
 
-            if (
-                tokens[0].token_type == TokenType.LEFT_PARENTHESIS
-                and tokens[-1].token_type == TokenType.RIGHT_PARENTHESIS
-            ):
-                return self.make_ast(tokens[1:-1])
-
-    def is_term(self, token: Token) -> bool:
-        return token.token_type in {TokenType.PLUS, TokenType.MINUS}
-
-    def is_factor(self, token: Token) -> bool:
+    def is_factor(self, token) -> bool:
         return token.token_type in {TokenType.TIMES, TokenType.DIVIDE}
 
-    def is_power(self, token: Token) -> bool:
-        return token.token_type == TokenType.POWER
+    def parse_power(self, tokens: list[Token]) -> Expression:
+        left = self.parse_unary(tokens)
+
+        while tokens and tokens[0].token_type == TokenType.POWER:
+            operator = tokens.pop(0)
+            right = self.parse_unary(tokens)
+            left = token_to_class[operator.token_type](left, right)
+
+        return left
+
+    def parse_unary(self, tokens: list[Token]) -> Expression:
+        if tokens and tokens[0].token_type == TokenType.MINUS:
+            operator = tokens.pop(0)
+            operand = self.parse_unary(tokens)
+            return Negative(None, operand)
+        if tokens and self.is_unary_function(tokens[0]):
+            operator = tokens.pop(0)
+            operand = self.parse_unary(tokens)
+            return token_to_class[operator.token_type](operand, None)
+
+        return self.parse_number_var(tokens)
+
+    def parse_number_var(self, tokens: list[Token]) -> Expression:
+
+        if not tokens:
+            raise ValueError()
+
+        token = tokens.pop(0)
+
+        if token.token_type in {TokenType.NUMBER, TokenType.IDENTIFIER}:
+            return Term(token)
+
+        if token.token_type == TokenType.LEFT_PARENTHESIS:
+            expression = self.parse_expression(tokens)
+            if not tokens or tokens.pop(0).token_type != TokenType.RIGHT_PARENTHESIS:
+                raise Parentesis_Error("Paréntesis no balanceados.")
+            return expression
+
+        raise ValueError(f"Token inesperado: {token}")
 
     def is_unary_function(self, token: Token) -> bool:
         return token.token_type in {
