@@ -18,7 +18,7 @@ class RungeKutta:
         h: int | float,
         function: str,
         SEL_function: List[str] = None,
-    ):
+    ) -> None:
         try:
             self.sel: List[str] = SEL_function if SEL_function is not None else None
             self.x0: float = float(x0)
@@ -58,9 +58,7 @@ class RungeKutta:
                 y_right[i + 1] = y_right[i] + self.h * (
                     k1 / 6 + k2 / 3 + k3 / 3 + k4 / 6
                 )
-            print(
-                "Y calculada con rk=", y_right
-            )  # si hay 1 nan o inf va a devolver un error
+            # si hay 1 nan o inf va a devolver un error
             if any(np.isinf(y_right)) or any(np.isnan(y_right)):
                 raise Inf()
             return X_right, y_right
@@ -77,17 +75,16 @@ class RungeKutta:
         except Exception as e:
             raise RK_Error()
 
-    def isoclinas(self, x_min, x_max, y_min, y_max):
+    def isoclinas(
+        self, x_min, x_max, y_min, y_max
+    ) -> Tuple[List[float], List[float], List[float], List[float]]:
         x_values = np.linspace(x_min, x_max, 25)
         y_values = np.linspace(y_min, y_max, 25)
         X, Y = np.meshgrid(x_values, y_values)
         U = np.ones_like(X)
         V = self.edo({"x": X, "y": Y})
         aux = V.copy().flatten()
-        print("################")
-        print(
-            "esta es la Y de las isoclinas", aux
-        )  ### si hay aunque sea 1 nan o inf va a dar devolver un error
+        ### si hay aunque sea 1 nan o inf va a dar devolver un error
         if any(np.isinf(aux)) or any(np.isnan(aux)):
             raise Inf()
         return (

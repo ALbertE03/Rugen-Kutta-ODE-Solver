@@ -4,14 +4,14 @@ from logic.error import TokenError
 
 
 class Token:
-    def __init__(self, lex, token_type):
+    def __init__(self, lex, token_type) -> None:
         self.lex: str = lex
         self.token_type: TokenType = token_type
 
     def __eq__(self, value: object) -> bool:
         return self.lex == value.lex and self.token_type == value.token_type
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Token( Lex:{self.lex}, Type:{self.token_type} )"
 
     def __repr__(self) -> str:
@@ -56,7 +56,9 @@ CONSTANTS = {
 
 class TokenPattern:
 
-    def __init__(self, regex_pattern: str, token_type: TokenType, follow: str = None):
+    def __init__(
+        self, regex_pattern: str, token_type: TokenType, follow: str = None
+    ) -> None:
         self.regex_pattern: re.Pattern[str] = re.compile(regex_pattern)
         self.token_type: TokenType = token_type
         self.follow: re.Pattern = re.compile(follow) if follow else None
@@ -148,7 +150,7 @@ class Lexer:
         return response
 
 
-def add_times(response, token):
+def add_times(response, token) -> bool:
     return (
         response[-1].token_type == TokenType.IDENTIFIER
         and token.token_type == TokenType.NUMBER
