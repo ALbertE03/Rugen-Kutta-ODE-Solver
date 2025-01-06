@@ -77,7 +77,6 @@ with input_col:
                         width=600, height=400
                     )
                     st.altair_chart(combined_chart, use_container_width=True)
-
             except ValueError as e:
                 st.error(f"Error: {e}")
             except Parentesis_Error as e:
