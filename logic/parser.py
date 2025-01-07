@@ -104,7 +104,12 @@ class Parser:
 
         token = tokens.pop(0)
 
-        if token.token_type in {TokenType.NUMBER, TokenType.IDENTIFIER}:
+        if token.token_type in {
+            TokenType.NUMBER,
+            TokenType.IDENTIFIER,
+            TokenType.E,
+            TokenType.PI,
+        }:
             return Term(token)
 
         if token.token_type == TokenType.LEFT_PARENTHESIS:

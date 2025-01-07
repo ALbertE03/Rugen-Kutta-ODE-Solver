@@ -36,7 +36,7 @@ with input_col:
                 rk_solver = RungeKutta(x0, y0, xf, h, equation_str)
                 print(rk_solver.ast)
 
-                X, Y = rk_solver.solver()
+                X, Y = rk_solver.solver_rk4()
                 x_min, x_max = x0, xf
                 y_min, y_max = min(Y), max(Y)
                 X_iso, Y_iso, U_iso, V_iso = rk_solver.isoclinas(
