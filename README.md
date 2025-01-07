@@ -66,4 +66,5 @@ Once you have Python installed, make sure to install the dependencies required f
 
 ```
 pip install -r requirements.txt
+streamlit run EDO-Project.py
 ```
