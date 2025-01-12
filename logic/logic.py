@@ -137,19 +137,21 @@ class RungeKutta:
     def isoclinas(
         self, x_min, x_max, y_min, y_max, scale_factor: float = 1
     ) -> Tuple[List[float], List[float], List[float], List[float]]:
+
         density = int(30 / scale_factor)
         x_values = np.linspace(x_min, x_max, density)
         y_values = np.linspace(y_min, y_max, density)
         X, Y = np.meshgrid(x_values, y_values)
         U = np.ones_like(X)
         V = self.edo({"x": X, "y": Y})
-        aux = V.copy().flatten()
+        if isinstance(V, np.ndarray):
+            aux = V.copy().flatten()
+            # Si hay aunque sea 1 NaN o Inf, va a devolver un error
+            if any(np.isinf(aux)) or any(np.isnan(aux)):
+                raise Inf()
+        else:
+            V = np.array(V)
 
-        # Si hay aunque sea 1 NaN o Inf, va a devolver un error
-        if any(np.isinf(aux)) or any(np.isnan(aux)):
-            raise Inf()
-
-        
         arrow_length = 0.1 * scale_factor
         U_scaled = U * arrow_length
         V_scaled = V * arrow_length
@@ -163,6 +165,3 @@ class RungeKutta:
             U_scaled.flatten().tolist(),
             V_scaled.flatten().tolist(),
         )
-
-
-    
