@@ -1,13 +1,19 @@
 import numpy as np
-from scipy.linalg import expm
 from scipy.integrate import solve_ivp
 import plotly.graph_objects as go
 import streamlit as st
 
+def matrix_exponential(A, t):
+    n = A.shape[0]
+    exp_At = np.eye(n) + A * t
+    for k in range(2, 20):  # Ajustar el número de términos para mayor precisión
+        exp_At += np.linalg.matrix_power(A * t, k) / np.math.factorial(k)
+    return exp_At
+
 def solve_system_3x3(A, Y0):
     eigenvalues, eigenvectors = np.linalg.eig(A)
     stable = all(np.real(eigenvalues) < 0)
-    exp_At = expm(A)
+    exp_At = matrix_exponential(A, 1)  # Calcular la matriz exponencial para t=1
     
     # Resolver el sistema usando los valores iniciales
     t_span = [0, 10]

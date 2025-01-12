@@ -8,13 +8,7 @@ def solve_system_2x2(A, Y0):
     eigenvalues, eigenvectors = np.linalg.eig(A)
     stable = all(np.real(eigenvalues) < 0)
     exp_At = expm(A)
-    
-    # Resolver el sistema usando los valores iniciales
-    t_span = [0, 10]
-    t_eval = np.linspace(0, 10, 200)
-    sol = solve_ivp(system_2x2, t_span, Y0, args=(A,), t_eval=t_eval)
-    
-    return exp_At, stable, eigenvalues, eigenvectors, sol.y
+    return exp_At, stable, eigenvalues, eigenvectors
 
 def get_solutions_2x2(eigenvalues, eigenvectors, Y0):
     solutions = []
