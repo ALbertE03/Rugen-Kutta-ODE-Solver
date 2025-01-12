@@ -14,16 +14,24 @@ if option == "2x2":
     matrix = []
     row1 = col1.columns(2)
     row2 = col1.columns(2)
-    matrix.append([row1[0].number_input("A[1,1]", format="%.2f", key="A11"),
-                   row1[1].number_input("A[1,2]", format="%.2f", key="A12")])
-    matrix.append([row2[0].number_input("A[2,1]", format="%.2f", key="A21"),
-                   row2[1].number_input("A[2,2]", format="%.2f", key="A22")])
+    matrix.append(
+        [
+            row1[0].number_input("A[1,1]", format="%.2f", key="A11"),
+            row1[1].number_input("A[1,2]", format="%.2f", key="A12"),
+        ]
+    )
+    matrix.append(
+        [
+            row2[0].number_input("A[2,1]", format="%.2f", key="A21"),
+            row2[1].number_input("A[2,2]", format="%.2f", key="A22"),
+        ]
+    )
     A = np.array(matrix)
     Y0 = [col1.number_input(f"Valor inicial de x{i+1}", format="%.2f") for i in range(2)]
     if col1.button("Graficar"):
         col1.subheader("Diagrama de Fase 2D")
         plot_phase_diagram_2d(A)
-    
+
     col2.subheader("Resultados")
     res1, res2 = col2.columns(2)
     res3, res4 = col2.columns(2)
@@ -33,7 +41,9 @@ if option == "2x2":
     res2.write("Estabilidad:")
     res2.write("El sistema es estable" if stable else "El sistema no es estable")
     if not stable:
-        res2.write("El sistema no es estable porque al menos uno de los valores propios tiene parte real no negativa.")
+        res2.write(
+            "El sistema no es estable porque al menos uno de los valores propios tiene parte real no negativa."
+        )
     res3.write("Valores propios:")
     res3.write(eigenvalues)
     res4.write("Vectores propios:")
@@ -49,15 +59,27 @@ elif option == "3x3":
     row1 = col1.columns(3)
     row2 = col1.columns(3)
     row3 = col1.columns(3)
-    matrix.append([row1[0].number_input("A[1,1]", format="%.2f", key="A31"),
-                   row1[1].number_input("A[1,2]", format="%.2f", key="A32"),
-                   row1[2].number_input("A[1,3]", format="%.2f", key="A33")])
-    matrix.append([row2[0].number_input("A[2,1]", format="%.2f", key="A41"),
-                   row2[1].number_input("A[2,2]", format="%.2f", key="A42"),
-                   row2[2].number_input("A[2,3]", format="%.2f", key="A43")])
-    matrix.append([row3[0].number_input("A[3,1]", format="%.2f", key="A51"),
-                   row3[1].number_input("A[3,2]", format="%.2f", key="A52"),
-                   row3[2].number_input("A[3,3]", format="%.2f", key="A53")])
+    matrix.append(
+        [
+            row1[0].number_input("A[1,1]", format="%.2f", key="A31"),
+            row1[1].number_input("A[1,2]", format="%.2f", key="A32"),
+            row1[2].number_input("A[1,3]", format="%.2f", key="A33"),
+        ]
+    )
+    matrix.append(
+        [
+            row2[0].number_input("A[2,1]", format="%.2f", key="A41"),
+            row2[1].number_input("A[2,2]", format="%.2f", key="A42"),
+            row2[2].number_input("A[2,3]", format="%.2f", key="A43"),
+        ]
+    )
+    matrix.append(
+        [
+            row3[0].number_input("A[3,1]", format="%.2f", key="A51"),
+            row3[1].number_input("A[3,2]", format="%.2f", key="A52"),
+            row3[2].number_input("A[3,3]", format="%.2f", key="A53"),
+        ]
+    )
     A = np.array(matrix)
     Y0 = [col1.number_input(f"Valor inicial de x{i+1}", format="%.2f") for i in range(3)]
     if col1.button("Graficar"):
@@ -73,7 +95,9 @@ elif option == "3x3":
     res2.write("Estabilidad:")
     res2.write("El sistema es estable" if stable else "El sistema no es estable")
     if not stable:
-        res2.write("El sistema no es estable porque al menos uno de los valores propios tiene parte real no negativa.")
+        res2.write(
+            "El sistema no es estable porque al menos uno de los valores propios tiene parte real no negativa."
+        )
     res3.write("Valores propios:")
     res3.write(eigenvalues)
     res4.write("Vectores propios:")
