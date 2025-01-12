@@ -19,6 +19,7 @@ if option == "2x2":
     matrix.append([row2[0].number_input("A[2,1]", format="%.2f", key="A21"),
                    row2[1].number_input("A[2,2]", format="%.2f", key="A22")])
     A = np.array(matrix)
+    Y0 = [col1.number_input(f"Valor inicial de x{i+1}", format="%.2f") for i in range(2)]
     if col1.button("Graficar"):
         col1.subheader("Diagrama de Fase 2D")
         plot_phase_diagram_2d(A)
@@ -26,7 +27,7 @@ if option == "2x2":
     col2.subheader("Resultados")
     res1, res2 = col2.columns(2)
     res3, res4 = col2.columns(2)
-    exp_At, stable, eigenvalues, eigenvectors = solve_system_2x2(A)
+    exp_At, stable, eigenvalues, eigenvectors, sol_y = solve_system_2x2(A, Y0)
     res1.write("Matriz exponencial \(e^{At}\):")
     res1.write(exp_At)
     res2.write("Estabilidad:")
@@ -38,7 +39,7 @@ if option == "2x2":
     res4.write("Vectores propios:")
     res4.write(eigenvectors)
     res3.write("Soluciones del sistema:")
-    solutions = get_solutions_2x2(eigenvalues, eigenvectors)
+    solutions = get_solutions_2x2(eigenvalues, eigenvectors, Y0)
     for solution in solutions:
         res3.latex(solution)
 
@@ -58,14 +59,15 @@ elif option == "3x3":
                    row3[1].number_input("A[3,2]", format="%.2f", key="A52"),
                    row3[2].number_input("A[3,3]", format="%.2f", key="A53")])
     A = np.array(matrix)
+    Y0 = [col1.number_input(f"Valor inicial de x{i+1}", format="%.2f") for i in range(3)]
     if col1.button("Graficar"):
         col1.subheader("Diagrama de Fase 3D")
-        plot_phase_diagram_3d(A)
+        exp_At, stable, eigenvalues, eigenvectors, sol_y = solve_system_3x3(A, Y0)
+        plot_phase_diagram_3d(A, sol_y)
     
     col2.subheader("Resultados")
     res1, res2 = col2.columns(2)
     res3, res4 = col2.columns(2)
-    exp_At, stable, eigenvalues, eigenvectors = solve_system_3x3(A)
     res1.write("Matriz exponencial \(e^{At}\):")
     res1.write(exp_At)
     res2.write("Estabilidad:")
@@ -77,6 +79,6 @@ elif option == "3x3":
     res4.write("Vectores propios:")
     res4.write(eigenvectors)
     res3.write("Soluciones del sistema:")
-    solutions = get_solutions_3x3(eigenvalues, eigenvectors)
+    solutions = get_solutions_3x3(eigenvalues, eigenvectors, Y0)
     for solution in solutions:
         res3.latex(solution)

@@ -4,13 +4,19 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import streamlit as st
 
-def solve_system_2x2(A):
+def solve_system_2x2(A, Y0):
     eigenvalues, eigenvectors = np.linalg.eig(A)
     stable = all(np.real(eigenvalues) < 0)
     exp_At = expm(A)
-    return exp_At, stable, eigenvalues, eigenvectors
+    
+    # Resolver el sistema usando los valores iniciales
+    t_span = [0, 10]
+    t_eval = np.linspace(0, 10, 200)
+    sol = solve_ivp(system_2x2, t_span, Y0, args=(A,), t_eval=t_eval)
+    
+    return exp_At, stable, eigenvalues, eigenvectors, sol.y
 
-def get_solutions_2x2(eigenvalues, eigenvectors):
+def get_solutions_2x2(eigenvalues, eigenvectors, Y0):
     solutions = []
     for i, eigenvalue in enumerate(eigenvalues):
         if np.iscomplex(eigenvalue):

@@ -1,16 +1,22 @@
 import numpy as np
 from scipy.linalg import expm
 from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import streamlit as st
 
-def solve_system_3x3(A):
+def solve_system_3x3(A, Y0):
     eigenvalues, eigenvectors = np.linalg.eig(A)
     stable = all(np.real(eigenvalues) < 0)
     exp_At = expm(A)
-    return exp_At, stable, eigenvalues, eigenvectors
+    
+    # Resolver el sistema usando los valores iniciales
+    t_span = [0, 10]
+    t_eval = np.linspace(0, 10, 200)
+    sol = solve_ivp(system_3x3, t_span, Y0, args=(A,), t_eval=t_eval)
+    
+    return exp_At, stable, eigenvalues, eigenvectors, sol.y
 
-def get_solutions_3x3(eigenvalues, eigenvectors):
+def get_solutions_3x3(eigenvalues, eigenvectors, Y0):
     solutions = []
     for i, eigenvalue in enumerate(eigenvalues):
         if np.iscomplex(eigenvalue):
@@ -33,19 +39,18 @@ def get_solutions_3x3(eigenvalues, eigenvectors):
 def system_3x3(t, Y, A):
     return A @ Y
 
-def plot_phase_diagram_3d(A):
-    fig = plt.figure(figsize=(4, 3))
-    ax = fig.add_subplot(111, projection='3d')
-    t_span = [0, 10]
-    t_eval = np.linspace(0, 10, 200)
-    Y0 = [np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1])]
-    
-    for y0 in Y0:
-        sol = solve_ivp(system_3x3, t_span, y0, args=(A,), t_eval=t_eval)
-        ax.plot(sol.y[0], sol.y[1], sol.y[2])
+def plot_phase_diagram_3d(A, sol_y):
+    fig = go.Figure()
 
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.set_title("Diagrama de Fase en 3D")
-    st.pyplot(fig)
+    # Crear líneas y puntos coloridos para la solución particular
+    fig.add_trace(go.Scatter3d(x=sol_y[0], y=sol_y[1], z=sol_y[2],
+                               mode='lines+markers',
+                               marker=dict(size=4),
+                               line=dict(color='blue', width=2)))
+
+    fig.update_layout(scene=dict(
+                        xaxis_title='X',
+                        yaxis_title='Y',
+                        zaxis_title='Z'),
+                      title='Diagrama de Fase en 3D')
+    st.plotly_chart(fig)
