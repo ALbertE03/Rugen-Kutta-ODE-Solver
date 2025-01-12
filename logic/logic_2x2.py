@@ -104,8 +104,9 @@ class Solve2x2:
             else:
                 ## caso en que no se pueda calcular la inversa.... falta por hacer
                 return solutions.append("")
-        else:
-            # asi se comprueba si son reales? chekea esto...
+        elif (
+            abs(eigenvalues[0].imag) < 1e-20 and abs(eigenvalues[1].imag) < 1e-20
+        ):  # asi se comprueba si son reales? chekea esto...
             # ambos son reales pd: tengo que averiguar si si ambos son complejos entra aqui tambien
             """
             si llegamos aqui es ambos son reales y diferentes:
@@ -132,10 +133,13 @@ class Solve2x2:
                     r.append(aux)
 
                 solutions.append(f"x(t)={eigenvectors}*{r}*{P_inv}*c")
-                print(solutions)
                 return solutions
             else:
                 return solutions.append("")
+        else:
+
+            """aqui entra cuado son complejos ambos, tengo que averiguar una cosa"""
+            return solutions.append("no esta echo")
 
     def system_2x2(self, t, Y, A):
         return A @ Y
