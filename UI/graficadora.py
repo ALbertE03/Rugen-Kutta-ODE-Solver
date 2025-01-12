@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-import os
 import pandas as pd
 import altair as alt
 from logic.logic import RungeKutta  # Importa RungeKutta
@@ -12,7 +11,6 @@ from logic.error import (
 )  # Importa las excepciones personalizadas
 
 st.subheader("Graficadora")
-
 
 input_col, plot_col = st.columns([1, 2])
 
@@ -39,11 +37,11 @@ with input_col:
                 X, Y = rk_solver.solver_rk4()
                 x_min, x_max = x0, xf
                 y_min, y_max = min(Y), max(Y)
+                scale_factor = max(x_max - x_min, y_max - y_min) / 1
                 X_iso, Y_iso, U_iso, V_iso = rk_solver.isoclinas(
                     x_min, x_max, y_min, y_max
                 )
                 with plot_col:
-
                     line_data = pd.DataFrame({"x": X, "y": Y})
                     quiver_data = pd.DataFrame(
                         {"x": X_iso, "y": Y_iso, "u": U_iso, "v": V_iso}
@@ -58,13 +56,13 @@ with input_col:
                         )
                     )
 
-                    arrow_length = 0.1
-                    quiver_data["x2"] = (
-                        quiver_data["x"] + quiver_data["u"] * arrow_length
-                    )
-                    quiver_data["y2"] = (
-                        quiver_data["y"] + quiver_data["v"] * arrow_length
-                    )
+                    arrow_length = 0.2 * scale_factor
+                    quiver_data["x2"] = quiver_data["x"] + quiver_data["u"] * arrow_length
+                    quiver_data["y2"] = quiver_data["y"] + quiver_data["v"] * arrow_length
+
+                    # Asegurarse de que las flechas no se salgan del gráfico
+                    quiver_data["x2"] = quiver_data["x2"].clip(lower=x_min, upper=x_max)
+                    quiver_data["y2"] = quiver_data["y2"].clip(lower=y_min, upper=y_max)
 
                     arrows = (
                         alt.Chart(quiver_data)
@@ -77,6 +75,7 @@ with input_col:
                         width=600, height=400
                     )
                     st.altair_chart(combined_chart, use_container_width=True)
+
             except ValueError as e:
                 st.error(f"Error: {e}")
             except Parentesis_Error as e:

@@ -135,27 +135,34 @@ class RungeKutta:
             raise RK_Error()
 
     def isoclinas(
-        self, x_min, x_max, y_min, y_max
+        self, x_min, x_max, y_min, y_max, scale_factor: float = 1
     ) -> Tuple[List[float], List[float], List[float], List[float]]:
-        x_values = np.linspace(x_min, x_max, 25)
-        y_values = np.linspace(y_min, y_max, 25)
+        density = int(30 / scale_factor)
+        x_values = np.linspace(x_min, x_max, density)
+        y_values = np.linspace(y_min, y_max, density)
         X, Y = np.meshgrid(x_values, y_values)
         U = np.ones_like(X)
         V = self.edo({"x": X, "y": Y})
         aux = V.copy().flatten()
-        ### si hay aunque sea 1 nan o inf va a dar devolver un error
+
+        # Si hay aunque sea 1 NaN o Inf, va a devolver un error
         if any(np.isinf(aux)) or any(np.isnan(aux)):
             raise Inf()
+
+        
+        arrow_length = 0.1 * scale_factor
+        U_scaled = U * arrow_length
+        V_scaled = V * arrow_length
+
+        U_scaled = np.clip(U_scaled, x_min - X, x_max - X)
+        V_scaled = np.clip(V_scaled, y_min - Y, y_max - Y)
+
         return (
             X.flatten().tolist(),
             Y.flatten().tolist(),
-            U.flatten().tolist(),
-            V.flatten().tolist(),
+            U_scaled.flatten().tolist(),
+            V_scaled.flatten().tolist(),
         )
 
-    def solver_sel(self):
-        if self.sel is None or len(self.sel) != 2 or not isinstance(self.sel, list):
-            raise SEL()
-        ### aqui resolver lo de los sel, ojo hay q tokenizarlo y parsearlo primero
-        # self.sel[0] -> primera ecuación
-        # self.sel[1]->segunda
+
+    
