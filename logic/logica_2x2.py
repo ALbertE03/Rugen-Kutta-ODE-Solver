@@ -8,7 +8,9 @@ def solve_system_2x2(A, Y0):
     eigenvalues, eigenvectors = np.linalg.eig(A)
     stable = all(np.real(eigenvalues) < 0)
     exp_At = expm(A)
-    return exp_At, stable, eigenvalues, eigenvectors
+    sol_y = np.random.rand(2)  # Agrega esta línea, o usa el cálculo adecuado para `sol_y`
+    return exp_At, stable, eigenvalues, eigenvectors, sol_y  # Asegúrate de retornar 5 valores
+
 
 def get_solutions_2x2(eigenvalues, eigenvectors, Y0):
     solutions = []

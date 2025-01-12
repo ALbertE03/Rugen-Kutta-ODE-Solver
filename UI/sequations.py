@@ -43,6 +43,7 @@ if option == "2x2":
         res1, res2 = col2.columns(2)
         res1.markdown("#### Matriz exponencial \(e^{At}\):")
         exp_At, stable, eigenvalues, eigenvectors, sol_y = solve_system_2x2(A, Y0)
+
         res1.table(np.round(exp_At, 3).tolist())  # Mostrar matriz en formato de tabla y truncar a 3 decimales
         res2.markdown("#### Estabilidad:")
         res2.write("El sistema es estable" if stable else "El sistema no es estable")
