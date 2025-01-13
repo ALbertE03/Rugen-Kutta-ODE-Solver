@@ -4,6 +4,7 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import streamlit as st
 
+
 class Solve2x2:
     def __init__(self):
         pass
@@ -17,7 +18,11 @@ class Solve2x2:
 
     def format_matrix(self, matrix):
         return np.vectorize(
-            lambda x: f"{x:.2e}" if abs(x) >= 1e-7 or abs(x) < 1e-7 else np.round(x, decimals=0)
+            lambda x: (
+                f"{x:.2e}"
+                if abs(x) >= 1e-7 or abs(x) < 1e-7
+                else np.round(x, decimals=0)
+            )
         )(matrix)
 
     def format_number(self, number):
@@ -50,19 +55,18 @@ class Solve2x2:
     def format_special(self, matrix):
         def special_format(val):
             str_val = f"{val:.2e}"
-            base, exponent = str_val.split('e')
+            base, exponent = str_val.split("e")
             if exponent.endswith("00"):
-                return base.split('.')[0]
+                return base.split(".")[0]
             else:
                 return "0"
-        
+
         formatted_matrix = "\\begin{pmatrix}"
         for row in matrix:
             formatted_row = " & ".join(special_format(val) for val in row)
             formatted_matrix += formatted_row + " \\\\ "
         formatted_matrix += "\\end{pmatrix}"
         return formatted_matrix
-
 
         formatted_matrix = "\\begin{pmatrix}"
         for row in matrix:
@@ -73,7 +77,7 @@ class Solve2x2:
 
     def get_solutions_2x2(self, eigenvalues, eigenvectors, A):
         solutions = []
-        
+
         if A[0][1] == 0 and A[1][1] == 0:
             new_A = A
             r = []
@@ -88,8 +92,12 @@ class Solve2x2:
             solutions.append(f"x_1(t) = {self.format_latex_matrix(r)}c")
             return solutions
         if A[0][0] == A[1][1] and A[0][1] + A[1][0] == 0:
-            solutions.append(rf"x_1(t) = e^{{{self.format_number(-A[0][0])}t}}(c_1\cos({self.format_number(A[1][0])}t) - c_2\sin({self.format_number(A[1][0])}t))")
-            solutions.append(rf"x_2(t) = e^{{{self.format_number(-A[0][0])}t}}(c_1\sin({self.format_number(A[1][0])}t) + c_2\cos({self.format_number(A[1][0])}t))")
+            solutions.append(
+                rf"x_1(t) = e^{{{self.format_number(-A[0][0])}t}}(c_1\cos({self.format_number(A[1][0])}t) - c_2\sin({self.format_number(A[1][0])}t))"
+            )
+            solutions.append(
+                rf"x_2(t) = e^{{{self.format_number(-A[0][0])}t}}(c_1\sin({self.format_number(A[1][0])}t) + c_2\cos({self.format_number(A[1][0])}t))"
+            )
             return solutions
 
         elif eigenvalues[0] == eigenvalues[1]:
@@ -98,9 +106,9 @@ class Solve2x2:
             except:
                 P_inv = "P^-1"
 
+            diag_l = np.zeros((2, 2))
+            np.fill_diagonal(diag_l, eigenvalues)
             if not isinstance(P_inv, str):
-                diag_l = np.zeros((2, 2))
-                np.fill_diagonal(diag_l, eigenvalues)
                 S = np.einsum("ij,jk,kl->il", eigenvectors, diag_l, P_inv)
                 N = np.subtract(A, S)
                 k = 1
@@ -125,17 +133,17 @@ class Solve2x2:
                 solutions.append(s)
                 return solutions
             else:
-                solutions.append("")
+                solutions.append(
+                    f"{eigenvectors}{diag_l}{P_inv}c, ocurrió un error al calcular la inversa y no se puedo seguir el procedimieto"
+                )
                 return solutions
-        elif (
-            abs(eigenvalues[0].imag) < 1e-20 and abs(eigenvalues[1].imag) < 1e-20
-        ):
+        elif abs(eigenvalues[0].imag) < 1e-20 and abs(eigenvalues[1].imag) < 1e-20:
             try:
                 P_inv = np.linalg.inv(eigenvectors)
             except:
                 P_inv = "P^{-1}"
-
             if not isinstance(P_inv, str):
+                print(P_inv)
                 new_A = np.einsum("ij,jk,kl->il", eigenvectors, A, P_inv)
                 r = []
                 for i in range(len(new_A)):
@@ -146,14 +154,47 @@ class Solve2x2:
                         else:
                             aux.append("0")
                     r.append(aux)
-                solutions.append(f"x(t) = {self.format_latex_matrix(eigenvectors)} {self.format_latex_matrix(r)} {self.format_special(P_inv)} c")
+                solutions.append(
+                    f"x(t) = {self.format_latex_matrix(eigenvectors)} {self.format_latex_matrix(r)} {self.format_special(P_inv)} c"
+                )
                 return solutions
             else:
-                solutions.append("")
+                solutions.append(
+                    f"{eigenvectors}{A}{P_inv}c, ocurrió un error al calcular la inversa y no se puedo seguir el procedimieto"
+                )
                 return solutions
         else:
-            solutions.append("no está hecho")
-            return solutions
+
+            imagi1 = eigenvectors[0].imag[0]
+            imagi2 = eigenvectors[1][0].imag
+
+            real1 = eigenvectors[0].real[0]
+            real2 = eigenvectors[1][0].real
+            P = [
+                [imagi1, real1],
+                [imagi2, real2],
+            ]
+            try:
+                P_inv = np.linalg.inv(P)
+            except:
+                P_inv = "P^{-1}"
+            if not isinstance(P_inv, str):
+                Sol = np.einsum("ij,jk,kl->il", P, A, P_inv)
+                aux = [
+                    [
+                        f"e^({Sol[0][0]}t)cos(t)",
+                        f"-e^({Sol[0][0]}t)sen(t)",
+                    ],
+                    [f"e^({Sol[0][0]}t)sen(t)"],
+                    f"e^({Sol[0][0]}t)cos(t)",
+                ]
+
+                solutions.append(f"{P}{aux}{P_inv}c")
+                return solutions
+
+            return solutions.append(
+                f"{P}{A}{P_inv}c, ocurrio un error al calcular la inversa y no se pudo seguir el procedimieto"
+            )
 
     def system_2x2(self, t, Y, A):
         return A @ Y
