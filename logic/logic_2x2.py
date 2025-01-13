@@ -51,18 +51,12 @@ class Solve2x2:
         def special_format(val):
             str_val = f"{val:.2e}"
             base, exponent = str_val.split('e')
-            if exponent.endswith("00"):
+            if base.endswith("00"):
                 return base.split('.')[0]
-            else:
+            elif base.endswith("50") or base.endswith("5"):
                 return "0"
-        
-        formatted_matrix = "\\begin{pmatrix}"
-        for row in matrix:
-            formatted_row = " & ".join(special_format(val) for val in row)
-            formatted_matrix += formatted_row + " \\\\ "
-        formatted_matrix += "\\end{pmatrix}"
-        return formatted_matrix
-
+            else:
+                return f"{float(base):.0f}"
 
         formatted_matrix = "\\begin{pmatrix}"
         for row in matrix:
