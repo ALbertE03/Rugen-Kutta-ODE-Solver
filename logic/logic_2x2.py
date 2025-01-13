@@ -163,21 +163,35 @@ class Solve2x2:
             np.array([0, -1]),
         ]
 
-        for y0 in Y0_points:
+        colors = ['b', 'g', 'r', 'orange']  # Lista de colores para las curvas, incluyendo orange
+
+        for idx, y0 in enumerate(Y0_points):
             sol = solve_ivp(self.system_2x2, t_span, y0, args=(A,), t_eval=t_eval)
-            ax.plot(sol.y[0], sol.y[1])
-            ax.quiver(
-                sol.y[0],
-                sol.y[1],
-                np.gradient(sol.y[0]),
-                np.gradient(sol.y[1]),
-                scale_units="xy",
-                angles="xy",
-                scale=1,
-            )
+            ax.plot(sol.y[0], sol.y[1], color=colors[idx], alpha=0.7)  # Curvas coloridas
+            
+            for i in range(0, len(sol.y[0]), 3):  # Intervalo cambiado a 3
+                x, y = sol.y[0][i], sol.y[1][i]
+                dx, dy = np.gradient(sol.y[0])[i], np.gradient(sol.y[1])[i]
+                angle = np.arctan2(dy, dx)  # Ángulo de la tangente a la curva
+                symbol = '>'  # Símbolo de flecha sin cola
+                distance_from_center = np.sqrt(x**2 + y**2)
+                max_distance = np.sqrt(2)
+                size = 100 + 290 * (distance_from_center / max_distance)**3  # Tamaño ajustado para disminuir más rápido
+                alpha = distance_from_center/ max_distance  # Transparencia ajustada
+                ax.text(x, y, symbol, fontsize=size/10, color=(0, 0, 0, alpha), ha='center', va='center', rotation=np.degrees(angle))
 
         ax.axhline(0, color="black", linestyle="--", linewidth=0.5)
         ax.axvline(0, color="black", linestyle="--", linewidth=0.5)
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
         st.pyplot(fig)
+
+
+
+
+
+
+
+
+
+
