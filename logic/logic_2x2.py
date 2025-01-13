@@ -4,13 +4,11 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import streamlit as st
 
-
 class Solve2x2:
     def __init__(self):
         pass
 
     def solve_system_2x2(self, A):
-
         eigenvalues, eigenvectors = np.linalg.eig(A)
         stable = all(np.real(eigenvalues) < 0)
         exp_At = expm(A)
@@ -19,61 +17,88 @@ class Solve2x2:
 
     def format_matrix(self, matrix):
         return np.vectorize(
-            lambda x: f"{x:.2e}" if abs(x) >= 1e7 or abs(x) < 1e-7 else x
+            lambda x: f"{x:.2e}" if abs(x) >= 1e-7 or abs(x) < 1e-7 else np.round(x, decimals=0)
         )(matrix)
+
+    def format_number(self, number):
+        try:
+            if np.abs(number) < 1e-7:
+                return "0"
+            elif number == int(number):
+                return str(int(number))
+            else:
+                return f"{number:.2f}".rstrip("0").rstrip(".")
+        except (TypeError, ValueError):
+            return str(number)
+
+    def format_latex_matrix(self, matrix):
+        formatted_matrix = "\\begin{pmatrix}"
+        for row in matrix:
+            formatted_row = " & ".join(self.format_number(val) for val in row)
+            formatted_matrix += formatted_row + " \\\\ "
+        formatted_matrix += "\\end{pmatrix}"
+        return formatted_matrix
+
+    def format_latex_matrix_precise(self, matrix):
+        formatted_matrix = "\\begin{pmatrix}"
+        for row in matrix:
+            formatted_row = " & ".join(f"{val:.2e}" for val in row)
+            formatted_matrix += formatted_row + " \\\\ "
+        formatted_matrix += "\\end{pmatrix}"
+        return formatted_matrix
+
+    def format_special(self, matrix):
+        def special_format(val):
+            str_val = f"{val:.2e}"
+            base, exponent = str_val.split('e')
+            if exponent.endswith("00"):
+                return base.split('.')[0]
+            else:
+                return "0"
+        
+        formatted_matrix = "\\begin{pmatrix}"
+        for row in matrix:
+            formatted_row = " & ".join(special_format(val) for val in row)
+            formatted_matrix += formatted_row + " \\\\ "
+        formatted_matrix += "\\end{pmatrix}"
+        return formatted_matrix
+
+
+        formatted_matrix = "\\begin{pmatrix}"
+        for row in matrix:
+            formatted_row = " & ".join(special_format(val) for val in row)
+            formatted_matrix += formatted_row + " \\\\ "
+        formatted_matrix += "\\end{pmatrix}"
+        return formatted_matrix
 
     def get_solutions_2x2(self, eigenvalues, eigenvectors, A):
         solutions = []
+        
         if A[0][1] == 0 and A[1][1] == 0:
-            """
-            es una matriz diagonal y la solución viene dada por
-            x(t) = diag[e^l_i]c con l_i los valores de la diagonal
-            """
+            new_A = A
             r = []
             for i in range(len(new_A)):
                 aux = []
                 for j in range(len(new_A)):
                     if i == j:
-                        aux.append(f"e^{new_A[i][j]}t")
+                        aux.append(f"e^{{{self.format_number(new_A[i][j])}t}}")
                     else:
                         aux.append("0")
                 r.append(aux)
-            solutions.append(f"x(t)={r}*c")
+            solutions.append(f"x_1(t) = {self.format_latex_matrix(r)}c")
             return solutions
         if A[0][0] == A[1][1] and A[0][1] + A[1][0] == 0:
-            """si es de la forma
-            [[a, -b],
-            [b, a]] => la solución es e^at *([[cos(bt),sen(bt)], * c
-                                            [sen(bt),cos(bt)]])
-
-            que vedría siendo
-            x1(t) = e^at*(c1*cos(bt)-c2sen(bt))
-            x2(t) = e^at*(c1*sen(bt)+c2cos(bt))
-            """
-            solutions.append(rf"e^{A[0][0]}t(c_1*cos({A[1][0]}t)-c_2*sen({A[1][0]}t))")
-            solutions.append(f"e^{A[0][0]}t(c_1*sen({A[1][0]}t)+c_2*cos({A[1][0]}t))")
+            solutions.append(rf"x_1(t) = e^{{{self.format_number(-A[0][0])}t}}(c_1\cos({self.format_number(A[1][0])}t) - c_2\sin({self.format_number(A[1][0])}t))")
+            solutions.append(rf"x_2(t) = e^{{{self.format_number(-A[0][0])}t}}(c_1\sin({self.format_number(A[1][0])}t) + c_2\cos({self.format_number(A[1][0])}t))")
             return solutions
 
         elif eigenvalues[0] == eigenvalues[1]:
-            """
-            si los dos valores propios son iguales, solo puede ocurrir si son reales ('en matrices 2x2')
-            => en este caso la solución viene dada por:
-            x(t) = P* diag[e^(l_i*t)]*P^{-1}*[I+Nt+N^2t+N^3t.........(N^{k-1}t^{k-1})/(k-1)!]x0
-
-            P es la matriz de los vectores propios (eigenvectors)
-            P^{-1} la inversa
-            N = A-S
-            donde S = P*diag[l_i]*P^{-1}
-            N es una matriz nipotente, al elevarla a un cierto k se vovlerá 0 y la suma infinia será hasta ahí.
-            """
             try:
                 P_inv = np.linalg.inv(eigenvectors)
-                ## si trae valores muy pequeños, lansará execpión xq los conisderara 0 y puede llegar el caso que la tome no invertible
-                ## es caso de pasar la solución se dará generica con P^-1
             except:
                 P_inv = "P^-1"
+
             if not isinstance(P_inv, str):
-                P_inv = np.linalg.inv(eigenvectors)
                 diag_l = np.zeros((2, 2))
                 np.fill_diagonal(diag_l, eigenvalues)
                 S = np.einsum("ij,jk,kl->il", eigenvectors, diag_l, P_inv)
@@ -84,62 +109,51 @@ class Solve2x2:
                     k += 1
                     if k >= eigenvectors.shape[0]:
                         break
-
-                # construimos la solución
                 diag_end = []
                 for i in range(len(diag_l)):
                     aux = []
                     for j in range(len(diag_l)):
                         if i == j:
-                            aux.append(f"e^{diag_l[i][j]}t")
+                            aux.append(f"e^{{{self.format_number(diag_l[i][j])}t}}")
                         else:
                             aux.append("0")
                     diag_end.append(aux)
                 suma = ""
                 for i in range(1, k + 1):
                     suma += f"+{N}^{i}t"
-                s = f"x(t)= {eigenvectors}*{diag_end}*{P_inv}*[I{suma}]c"
+                s = f"x(t) = {self.format_latex_matrix(eigenvectors)} {self.format_latex_matrix(diag_end)} {self.format_special(P_inv)} (I + {self.format_latex_matrix(N)})c"
                 solutions.append(s)
                 return solutions
             else:
-                ## caso en que no se pueda calcular la inversa.... falta por hacer
-                return solutions.append("")
+                solutions.append("")
+                return solutions
         elif (
             abs(eigenvalues[0].imag) < 1e-20 and abs(eigenvalues[1].imag) < 1e-20
-        ):  # asi se comprueba si son reales? chekea esto...
-            # ambos son reales pd: tengo que averiguar si si ambos son complejos entra aqui tambien
-            """
-            si llegamos aqui es ambos son reales y diferentes:
-            en este caso la solución  se calcula PAP^-1
-            y se crea un nuevo sistema y = P^-1x que es desacoplado y resuelve como el primer caso
-            y quedaria
-            x(t)= PyP^-1c
-            """
+        ):
             try:
                 P_inv = np.linalg.inv(eigenvectors)
             except:
                 P_inv = "P^{-1}"
+
             if not isinstance(P_inv, str):
                 new_A = np.einsum("ij,jk,kl->il", eigenvectors, A, P_inv)
-                # new A deberia ser diagonal
                 r = []
                 for i in range(len(new_A)):
                     aux = []
                     for j in range(len(new_A)):
                         if i == j:
-                            aux.append(f"e^{new_A[i][j]}t")
+                            aux.append(f"e^{{{self.format_number(new_A[i][j])}t}}")
                         else:
                             aux.append("0")
                     r.append(aux)
-
-                solutions.append(f"x(t)={eigenvectors}*{r}*{P_inv}*c")
+                solutions.append(f"x(t) = {self.format_latex_matrix(eigenvectors)} {self.format_latex_matrix(r)} {self.format_special(P_inv)} c")
                 return solutions
             else:
-                return solutions.append("")
+                solutions.append("")
+                return solutions
         else:
-
-            """aqui entra cuado son complejos ambos, tengo que averiguar una cosa"""
-            return solutions.append("no esta echo")
+            solutions.append("no está hecho")
+            return solutions
 
     def system_2x2(self, t, Y, A):
         return A @ Y

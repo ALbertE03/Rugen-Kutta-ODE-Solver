@@ -38,7 +38,7 @@ if option == "2x2":
 
         col2.markdown("### Resultados")
         res1, res2 = col2.columns(2)
-        res1.markdown("#### Matriz exponencial:  $e^{At}$:")
+        res1.markdown("#### Matriz exponencial:  $-e^{At}$:")
         exp_At, stable, eigenvalues, eigenvectors, sol_y = solve2x2.solve_system_2x2(A)
 
         res1.table(
@@ -59,14 +59,17 @@ if option == "2x2":
         res3.markdown("#### Valores propios:")
         eigenvalues_display = [
             f"{val.real:.3f}".rstrip("0").rstrip(".")
-            + (f" + {val.imag:.3f}i".rstrip("0").rstrip(".") if val.imag != 0 else "")
+            + (f" + {val.imag:.3f}i".rstrip("0").rstrip(".") if val.imag > 0 else f" - {-val.imag:.3f}i".rstrip("0").rstrip("."))
+            if val.imag != 0 else f"{val.real:.3f}".rstrip("0").rstrip(".")
             for val in eigenvalues
         ]
         res3.table(eigenvalues_display)
+        
         res4.markdown("#### Vectores propios:")
-        eigenvectors_display = eigenvectors
+        eigenvectors_display = [[f"{val.real:.3f} + {val.imag:.3f}i".rstrip("0").rstrip(".") if val.imag != 0 else f"{val.real:.3f}".rstrip("0").rstrip(".") for val in row] for row in eigenvectors]
         res4.table(eigenvectors_display)
+        
         res3.markdown("#### Soluciones del sistema:")
         solutions = solve2x2.get_solutions_2x2(eigenvalues, eigenvectors, A)
         for solution in solutions:
-            res3.markdown(f"${solution}$")
+            col2.markdown(f"${solution}$")
