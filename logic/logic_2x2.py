@@ -73,8 +73,6 @@ class Solve2x2:
 
     def get_solutions_2x2(self, eigenvalues, eigenvectors, A):
         solutions = []
-
-        print(np.array(eigenvectors).flatten()[1])
         if A[0][1] == 0 and A[1][1] == 0:
             new_A = A
             r = []

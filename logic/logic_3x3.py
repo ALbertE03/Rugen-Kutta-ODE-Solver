@@ -2,7 +2,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import plotly.graph_objects as go
 import streamlit as st
-import sampy as sp
+import sympy as sp
 
 
 class Solve3x3:
