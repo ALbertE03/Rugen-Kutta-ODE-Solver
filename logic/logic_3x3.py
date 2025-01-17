@@ -2,6 +2,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import plotly.graph_objects as go
 import streamlit as st
+import sampy as sp
 
 
 class Solve3x3:
@@ -28,31 +29,102 @@ class Solve3x3:
 
     def get_solutions_3x3(self, eigenvalues, eigenvectors, Y0):
         solutions = []
-        for i, eigenvalue in enumerate(eigenvalues):
-            if np.iscomplex(eigenvalue):
-                alpha = np.real(eigenvalue)
-                beta = np.imag(eigenvalue)
-                v = eigenvectors[:, i]
-                v_str = " \\\\ ".join(
-                    [f"{v[j].real:.2f} + {v[j].imag:.2f}i" for j in range(len(v))]
-                )
+        unique, count = np.unique(eigenvalues, return_counts=True)
+        count_eigenvalues = dict(zip(unique, count))
+        is_compjex = False
+        index = -1
+        complex_index = -1
+        for j, i in enumerate(count_eigenvalues):
+            if np.isreal(i):
+                index = i
+            if np.iscomplex(i):
+                is_compjex = True
+                complex_index = i
+                break
+
+        if is_compjex:
+            v = np.array(eigenvectors).flatten()
+            part_real = complex_index.real
+            part_imag = complex_index.imag
+            part_imga_c = -complex_index.imag
+            value_real = index
+            c1, c2, c3 = sp.symbols("c1", "c2", "c3")
+
+            v1 = sp.matrix(v[:2].real)
+            v2 = sp.matrix(v[2:5].real)
+            v3 = sp.matrix(v[5:].real)
+            s = c1 * sp.expm(value_real * t) * v1
+            s2 = sp.expm(part_real * t) * (
+                c2 * sp.cos(part_imag * t) * v2 + c3 * sp.sin(part_imag * t) * v3
+            )
+            return sp.latex(s + s2)
+        if eigenvalues[0] != eigenvalues[1] != eigenvalues[2]:
+            try:
+                P_inv = np.linalg.inv(eigenvectors)
+            except:
+                P_inv = "P^-1"
+            if not isinstance(P_inv, str):
+                diag = np.einsum("ij,jk,kl->il", eigenvectors, A, P_inv)
+                r = []
+                for i in range(len(diag)):
+                    aux = []
+                    for j in range(len(diag)):
+                        if i == j:
+                            aux.append(f"e^{{{self.format_number(diag[i][j])}t}}")
+                        else:
+                            aux.append("0")
+                    r.append(aux)
                 solutions.append(
-                    rf"f_{{{i+1}}}(t) = e^{{{alpha}t}} \left(c_{{{i*2+1}}} \cos({beta}t) + c_{{{i*2+2}}} \sin({beta}t)\right) \begin{{bmatrix}} {v_str} \end{{bmatrix}}"
+                    f"x(t) = {self.format_latex_matrix(eigenvectors)} {r} {self.format_special(P_inv)} c"
                 )
+                return solutions
             else:
-                v = eigenvectors[:, i]
-                v_str = " \\\\ ".join([f"{v[j]:.2f}" for j in range(len(v))])
-                multiplicity = np.count_nonzero(np.isclose(eigenvalues, eigenvalue))
-                if multiplicity == 1:
-                    solutions.append(
-                        rf"f_{{{i+1}}}(t) = c_{{{i+1}}} e^{{{eigenvalue}t}} \begin{{bmatrix}} {v_str} \end{{bmatrix}}"
-                    )
-                else:
-                    for j in range(multiplicity):
-                        solutions.append(
-                            rf"f_{{{i+1+j}}}(t) = \left(c_{{{i+1+j}}} + c_{{{i+1+j+1}}} t\right) e^{{{eigenvalue}t}} \begin{{bmatrix}} {v_str} \end{{bmatrix}}"
-                        )
-        return solutions
+                solutions.append(
+                    f"{eigenvectors}{A}{P_inv}c, ocurrió un error al calcular la inversa y no se puedo seguir el procedimieto"
+                )
+                return solutions
+        if len(count_eigenvalues) == 1 or len(count_eigenvalues) == 2:
+            # multiplicad 3 o 2
+            try:
+                P_inv = np.linalg.inv(eigenvectors)
+            except:
+                P_inv = "P^-1"
+
+            diag_l = np.zeros((3, 3))
+            np.fill_diagonal(diag_l, eigenvalues)
+            if not isinstance(P_inv, str):
+                S = np.einsum("ij,jk,kl->il", eigenvectors, diag_l, P_inv)
+                N = np.subtract(A, S)
+                k = 1
+                while np.all(N == 0):
+                    N = np.dot(N, N)
+                    k += 1
+                    if k >= eigenvectors.shape[0]:
+                        break
+                diag_end = []
+                for i in range(len(diag_l)):
+                    aux = []
+                    for j in range(len(diag_l)):
+                        if i == j:
+                            aux.append(f"e^{{{self.format_number(diag_l[i][j])}t}}")
+                        else:
+                            aux.append("0")
+                    diag_end.append(aux)
+                suma = ""
+                for i in range(1, k + 1):
+                    f = np.math.factorial(i)
+                    if i <= 1:
+                        suma += f"+({N}^{i}t^{i})"
+                    else:
+                        suma += f"+({N}^{i}t^{i})/{np.math.factorial(i)}"
+                s = f"x(t) = {self.format_latex_matrix(eigenvectors)} {self.format_latex_matrix(diag_end)} {self.format_special(P_inv)} (I + {self.format_latex_matrix(suma)})c"
+                solutions.append(s)
+                return solutions
+            else:
+                solutions.append(
+                    f"{eigenvectors}{diag_l}{P_inv}c, ocurrió un error al calcular la inversa y no se puedo seguir el procedimieto"
+                )
+                return solutions
 
     def system_3x3(self, t, Y, A):
         return A @ Y

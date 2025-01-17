@@ -3,6 +3,7 @@ from scipy.linalg import expm
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import streamlit as st
+import sympy as sp
 
 
 class Solve2x2:
@@ -73,6 +74,7 @@ class Solve2x2:
     def get_solutions_2x2(self, eigenvalues, eigenvectors, A):
         solutions = []
 
+        print(np.array(eigenvectors).flatten()[1])
         if A[0][1] == 0 and A[1][1] == 0:
             new_A = A
             r = []
@@ -88,10 +90,10 @@ class Solve2x2:
             return solutions
         if A[0][0] == A[1][1] and A[0][1] + A[1][0] == 0:
             solutions.append(
-                rf"x_1(t) = e^{{{self.format_number(-A[0][0])}t}}(c_1\cos({self.format_number(A[1][0])}t) - c_2\sin({self.format_number(A[1][0])}t))"
+                rf"x_1(t) = e^{{{self.format_number(A[0][0])}t}}(c_1\cos({self.format_number(A[1][0])}t) - c_2\sin({self.format_number(A[1][0])}t))"
             )
             solutions.append(
-                rf"x_2(t) = e^{{{self.format_number(-A[0][0])}t}}(c_1\sin({self.format_number(A[1][0])}t) + c_2\cos({self.format_number(A[1][0])}t))"
+                rf"x_2(t) = e^{{{self.format_number(A[1][1])}t}}(c_1\sin({self.format_number(A[1][0])}t) + c_2\cos({self.format_number(A[1][0])}t))"
             )
             return solutions
 
@@ -123,8 +125,12 @@ class Solve2x2:
                     diag_end.append(aux)
                 suma = ""
                 for i in range(1, k + 1):
-                    suma += f"+{N}^{i}t"
-                s = f"x(t) = {self.format_latex_matrix(eigenvectors)} {self.format_latex_matrix(diag_end)} {self.format_special(P_inv)} (I + {self.format_latex_matrix(N)})c"
+                    f = np.math.factorial(i)
+                    if i <= 1:
+                        suma += f"+({N}^{i}t^{i})"
+                    else:
+                        suma += f"+({N}^{i}t^{i})/{np.math.factorial(i)}"
+                s = f"x(t) = {self.format_latex_matrix(eigenvectors)} {self.format_latex_matrix(diag_end)} {self.format_special(P_inv)} (I + {self.format_latex_matrix(suma)})c"  # esta ultima matriz es la matriz suma, no N
                 solutions.append(s)
                 return solutions
             else:
@@ -138,7 +144,7 @@ class Solve2x2:
             except:
                 P_inv = "P^{-1}"
             if not isinstance(P_inv, str):
-                print(P_inv)
+
                 new_A = np.einsum("ij,jk,kl->il", eigenvectors, A, P_inv)
                 r = []
                 for i in range(len(new_A)):
@@ -205,35 +211,43 @@ class Solve2x2:
             np.array([0, -1]),
         ]
 
-        colors = ['b', 'g', 'r', 'orange']  # Lista de colores para las curvas, incluyendo orange
+        colors = [
+            "b",
+            "g",
+            "r",
+            "orange",
+        ]  # Lista de colores para las curvas, incluyendo orange
 
         for idx, y0 in enumerate(Y0_points):
             sol = solve_ivp(self.system_2x2, t_span, y0, args=(A,), t_eval=t_eval)
-            ax.plot(sol.y[0], sol.y[1], color=colors[idx], alpha=0.7)  # Curvas coloridas
-            
-            for i in range(0, len(sol.y[0]), 3):  # Intervalo cambiado a 3
+            ax.plot(
+                sol.y[0], sol.y[1], color=colors[idx], alpha=0.7
+            )  # Curvas coloridas
+
+            """for i in range(0, len(sol.y[0]), 3):  # Intervalo cambiado a 3
                 x, y = sol.y[0][i], sol.y[1][i]
                 dx, dy = np.gradient(sol.y[0])[i], np.gradient(sol.y[1])[i]
                 angle = np.arctan2(dy, dx)  # Ángulo de la tangente a la curva
-                symbol = '>'  # Símbolo de flecha sin cola
+                symbol = ">"  # Símbolo de flecha sin cola
                 distance_from_center = np.sqrt(x**2 + y**2)
                 max_distance = np.sqrt(2)
-                size = 100 + 290 * (distance_from_center / max_distance)**3  # Tamaño ajustado para disminuir más rápido
-                alpha = distance_from_center/ max_distance  # Transparencia ajustada
-                ax.text(x, y, symbol, fontsize=size/10, color=(0, 0, 0, alpha), ha='center', va='center', rotation=np.degrees(angle))
-
+                size = (
+                    100 + 290 * (distance_from_center / max_distance) ** 3
+                )  # Tamaño ajustado para disminuir más rápido
+                # alpha = distance_from_center / max_distance  # Transparencia ajustada
+                ax.text(
+                    x,
+                    y,
+                    symbol,
+                    fontsize=size / 10,
+                    # color=(0, 0, 0, alpha),
+                    ha="center",
+                    va="center",
+                    rotation=np.degrees(angle),
+                )
+        """
         ax.axhline(0, color="black", linestyle="--", linewidth=0.5)
         ax.axvline(0, color="black", linestyle="--", linewidth=0.5)
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
         st.pyplot(fig)
-
-
-
-
-
-
-
-
-
-
