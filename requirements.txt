@@ -3,4 +3,5 @@ numpy
 streamlit
 seaborn
 altair
-sampy
+sympy 
+scipy
