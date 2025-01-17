@@ -3,9 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 from logic.logic_2x2 import Solve2x2
+from logic.logic_3x3 import Solve3x3
 
 solve2x2 = Solve2x2()
-
+solve3x3 = Solve3x3()
 st.title("Solver de Ecuaciones Diferenciales")
 
 option = st.radio("Seleccione el tamaño del sistema:", ("2x2", "3x3"))
