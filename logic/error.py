@@ -48,3 +48,14 @@ class LnLog(Exception):
     ) -> None:
         self.mensaje = mensaje
         super().__init__(self.mensaje)
+
+
+class Len(Exception):
+
+    def __init__(
+        self,
+        mensaje="""Deben haber misma cantidad de condiciones de ecuaciones como grado tenga la ecuación
+    """,
+    ) -> None:
+        self.mensaje = mensaje
+        super().__init__(self.mensaje)

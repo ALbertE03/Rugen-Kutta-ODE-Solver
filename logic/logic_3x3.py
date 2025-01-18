@@ -6,17 +6,17 @@ import sympy as sp
 
 
 class Solve3x3:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def matrix_exponential(self, A, t):
+    def matrix_exponential(self, A, t) -> np.ndarray:
         n = A.shape[0]
         exp_At = np.eye(n) + A * t
         for k in range(2, 20):
             exp_At += np.linalg.matrix_power(A * t, k) / np.math.factorial(k)
         return exp_At
 
-    def solve_system_3x3(self, A, Y0):
+    def solve_system_3x3(self, A, Y0) -> tuple:
         eigenvalues, eigenvectors = np.linalg.eig(A)
         stable = all(np.real(eigenvalues) < 0)
         exp_At = matrix_exponential(A, 1)
@@ -27,7 +27,7 @@ class Solve3x3:
 
         return exp_At, stable, eigenvalues, eigenvectors, sol.y
 
-    def get_solutions_3x3(self, eigenvalues, eigenvectors, Y0):
+    def get_solutions_3x3(self, eigenvalues, eigenvectors, Y0) -> list[str]:
         solutions = []
         unique, count = np.unique(eigenvalues, return_counts=True)
         count_eigenvalues = dict(zip(unique, count))
@@ -42,7 +42,9 @@ class Solve3x3:
                 complex_index = i
                 break
 
-        if is_compjex:
+        if (
+            is_compjex
+        ):  # esta parte tengo que probarla, xq necesito ver una cosa en la innterfaz cuando la hagas
             v = np.array(eigenvectors).flatten()
             part_real = complex_index.real
             part_imag = complex_index.imag
@@ -127,7 +129,7 @@ class Solve3x3:
     def system_3x3(self, t, Y, A):
         return A @ Y
 
-    def plot_phase_diagram_3d(self, A, sol_y):
+    def plot_phase_diagram_3d(self, A, sol_y) -> None:
         fig = go.Figure()
 
         fig.add_trace(
