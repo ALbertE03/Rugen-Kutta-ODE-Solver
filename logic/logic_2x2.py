@@ -4,20 +4,21 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import streamlit as st
 import sympy as sp
+from typing import Tuple
 
 
 class Solve2x2:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def solve_system_2x2(self, A):
+    def solve_system_2x2(self, A) -> Tuple:
         eigenvalues, eigenvectors = np.linalg.eig(A)
         stable = all(np.real(eigenvalues) < 0)
         exp_At = expm(A)
         sol_y = np.random.rand(2, 1)
         return exp_At, stable, eigenvalues, eigenvectors, sol_y
 
-    def format_matrix(self, matrix):
+    def format_matrix(self, matrix) -> np.vectorize:
         return np.vectorize(
             lambda x: (
                 f"{x:.2e}"
@@ -26,7 +27,7 @@ class Solve2x2:
             )
         )(matrix)
 
-    def format_number(self, number):
+    def format_number(self, number) -> str:
         try:
             if np.abs(number) < 1e-7:
                 return "0"
@@ -37,7 +38,7 @@ class Solve2x2:
         except (TypeError, ValueError):
             return str(number)
 
-    def format_latex_matrix(self, matrix):
+    def format_latex_matrix(self, matrix) -> str:
         formatted_matrix = "\\begin{pmatrix}"
         for row in matrix:
             formatted_row = " & ".join(self.format_number(val) for val in row)
@@ -45,7 +46,7 @@ class Solve2x2:
         formatted_matrix += "\\end{pmatrix}"
         return formatted_matrix
 
-    def format_latex_matrix_precise(self, matrix):
+    def format_latex_matrix_precise(self, matrix) -> str:
         formatted_matrix = "\\begin{pmatrix}"
         for row in matrix:
             formatted_row = " & ".join(f"{val:.2e}" for val in row)
@@ -53,7 +54,7 @@ class Solve2x2:
         formatted_matrix += "\\end{pmatrix}"
         return formatted_matrix
 
-    def format_special(self, matrix):
+    def format_special(self, matrix) -> str:
         def special_format(val):
             str_val = f"{val:.2e}"
             base, exponent = str_val.split("e")
@@ -71,7 +72,7 @@ class Solve2x2:
         formatted_matrix += "\\end{pmatrix}"
         return formatted_matrix
 
-    def get_solutions_2x2(self, eigenvalues, eigenvectors, A):
+    def get_solutions_2x2(self, eigenvalues, eigenvectors, A) -> list[str]:
         solutions = []
 
         if A[0][1] == 0 and A[1][1] == 0:
@@ -189,7 +190,7 @@ class Solve2x2:
     def system_2x2(self, t, Y, A):
         return A @ Y
 
-    def plot_phase_diagram_2d(self, A):
+    def plot_phase_diagram_2d(self, A) -> None:
         fig, ax = plt.subplots(figsize=(6, 6))
         t_span = [0, 10]
         t_eval = np.linspace(0, 10, 200)

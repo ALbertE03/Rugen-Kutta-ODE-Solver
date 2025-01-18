@@ -1,11 +1,11 @@
 import sympy as sp
 import numpy as np
 import matplotlib.pyplot as plt
-from error import Len
+from logic.error import Len
 
 
 class Sup:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def plot_homog(self) -> None:
