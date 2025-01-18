@@ -163,29 +163,19 @@ class Solve2x2:
                 )
                 return solutions
         else:
-
-            imagi1 = eigenvectors[0].imag[0]
-            imagi2 = eigenvectors[1][0].imag
-
-            real1 = eigenvectors[0].real[0]
-            real2 = eigenvectors[1][0].real
-            P = [
-                [imagi1, real1],
-                [imagi2, real2],
-            ]
             try:
                 P_inv = np.linalg.inv(P)
             except:
                 P_inv = "P^{-1}"
             if not isinstance(P_inv, str):
-                Sol = np.einsum("ij,jk,kl->il", P, A, P_inv)
+                Sol = np.einsum("ij,jk,kl->il", eigenvectors, A, P_inv)
                 aux = [
                     [
-                        f"e^({Sol[0][0]}t)cos(t)",
-                        f"-e^({Sol[0][0]}t)sen(t)",
+                        f"e^({Sol[0][0]}t)cos({Sol[0][1]}t)",
+                        f"-e^({Sol[0][0]}t)sen({Sol[0][1]}t)",
                     ],
-                    [f"e^({Sol[0][0]}t)sen(t)"],
-                    f"e^({Sol[0][0]}t)cos(t)",
+                    [f"e^({Sol[0][0]}t)sen({Sol[0][1]}t)"],
+                    f"e^({Sol[0][0]}t)cos({Sol[0][1]}t)",
                 ]
 
                 solutions.append(f"{P}{aux}{P_inv}c")
