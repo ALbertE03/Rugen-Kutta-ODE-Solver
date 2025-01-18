@@ -1,19 +1,27 @@
-import sympy
+import sympy as sp
 
 
 def solve(array, HOMOGENIA=False):
     x = sp.symbols("x")
     y = sp.Function("y")
-    # array es lista de tuplas de (coeficiente, grado de la derivada), si HOMOGENIA está true es que el ultimo elemento es el miembro derecho
+
     if HOMOGENIA:
+
         ode_homogenea = sum(coef * y(x).diff(x, grado) for coef, grado in array)
         sol_homogenea = sp.dsolve(sp.Eq(ode_homogenea, 0), y(x))
 
-        return sol_homogenea
+        sp.pprint(sol_homogenea)
 
-    ode_no_homogenea = sum(i[0] * y(x).diff(x, i[1]) for i in range(len(array) - 2))
+    else:
 
-    rhs = array[-1]
-    sol_no_homogenea = sp.dsolve(sp.Eq(ode_no_homogenea, rhs), y(x))
+        rhs = array[-1]
+        ode_no_homogenea = sum(coef * y(x).diff(x, grado) for coef, grado in array[:-1])
 
-    return sol_no_homogenea
+        sol_no_homogenea = sp.dsolve(sp.Eq(ode_no_homogenea, rhs), y(x))
+
+        sp.pprint(sol_no_homogenea)
+
+
+solve([(2, 2), (1, 1)], True)
+
+solve([(2, 2), (1, 1), sp.sin(sp.symbols("x"))], False)
