@@ -70,13 +70,11 @@ class Solve3x3:
                     aux = []
                     for j in range(len(diag)):
                         if i == j:
-                            aux.append(f"e^{{{self.format_number(diag[i][j])}t}}")
+                            aux.append(f"e^{{{diag[i][j]}t}}")
                         else:
                             aux.append("0")
                     r.append(aux)
-                solutions.append(
-                    f"x(t) = {self.format_latex_matrix(eigenvectors)} {r} {self.format_special(P_inv)} c"
-                )
+                solutions.append(f"x(t) = {eigenvectors} {r} {P_inv} c")
                 return solutions
             else:
                 solutions.append(
@@ -106,7 +104,7 @@ class Solve3x3:
                     aux = []
                     for j in range(len(diag_l)):
                         if i == j:
-                            aux.append(f"e^{{{self.format_number(diag_l[i][j])}t}}")
+                            aux.append(f"e^{{{diag_l[i][j]}t}}")
                         else:
                             aux.append("0")
                     diag_end.append(aux)
@@ -117,7 +115,7 @@ class Solve3x3:
                         suma += f"+({N}^{i}t^{i})"
                     else:
                         suma += f"+({N}^{i}t^{i})/{np.math.factorial(i)}"
-                s = f"x(t) = {self.format_latex_matrix(eigenvectors)} {self.format_latex_matrix(diag_end)} {self.format_special(P_inv)} (I + {self.format_latex_matrix(suma)})c"
+                s = f"x(t) = {eigenvectors} {diag_end} {P_inv} (I + {suma})c"
                 solutions.append(s)
                 return solutions
             else:
