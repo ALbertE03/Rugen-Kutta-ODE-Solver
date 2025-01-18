@@ -42,7 +42,9 @@ class Solve3x3:
                 complex_index = i
                 break
 
-        if is_compjex:
+        if (
+            is_compjex
+        ):  # esta parte tengo que probarla, xq necesito ver una cosa en la innterfaz cuando la hagas
             v = np.array(eigenvectors).flatten()
             part_real = complex_index.real
             part_imag = complex_index.imag
