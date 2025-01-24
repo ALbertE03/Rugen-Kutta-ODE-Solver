@@ -1,0 +1,8 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Introducción}{4}{}%
+\contentsline {section}{\numberline {2}Aplicación de los Sistemas de Primer Orden en Gravitación y las Leyes de Kepler.}{5}{}%
+\contentsline {subsection}{\numberline {2.1}Leyes de Kepler:}{5}{}%
+\contentsline {subsection}{\numberline {2.2}Ley de Gravitación Universal}{10}{}%
+\contentsline {subsection}{\numberline {2.3}Realización de los pasos 1 - 4 necesarios para demostrar las Leyes de Kepler mediante la Ley de Gravitación.}{12}{}%
+\contentsline {section}{\numberline {3}Conclusiones}{16}{}%
+\contentsline {section}{\numberline {4}Bibliografía}{16}{}%
