@@ -7,7 +7,7 @@ from logic.logic_3x3 import Solve3x3
 solve2x2 = Solve2x2()
 solve3x3 = Solve3x3()
 
-st.title("Solver de Ecuaciones Diferenciales")
+st.title("Sistemas de Ecuaciones Diferenciales")
 option = st.radio("Seleccione el tamaño del sistema:", ("2x2", "3x3"))
 col1, col2 = st.columns(2)
 
@@ -37,7 +37,7 @@ if option == "2x2":
 
         col2.markdown("### Resultados")
         res1, res2 = col2.columns(2)
-        res1.markdown("#### Matriz exponencial:  $e^{At}$:")
+        res1.markdown("##### Matriz exponencial  $e^{At}$:")
         exp_At, stable, eigenvalues, eigenvectors, sol_y = solve2x2.solve_system_2x2(A)
         res1.table(
             np.vectorize(lambda x: f"{x:.2e}" if abs(x) >= 1e7 or abs(x) < 1e-7 else x)(
@@ -87,8 +87,7 @@ if option == "2x2":
         res3.markdown("#### Soluciones del sistema:")
         solutions = solve2x2.get_solutions_2x2(eigenvalues, eigenvectors, A)
         for solution in solutions:
-            # For 2x2, we haven't changed how we wrap the solutions in logic_2x2.
-            # If you want them to appear as block LaTeX, you can do the same approach:
+            
             col2.markdown(f"${solution}$")
 
 
@@ -123,7 +122,7 @@ elif option == "3x3":
     A = np.array(matrix)
 
     if col1.button("Graficar"):
-        # Solve system with random initial conditions
+       
         Y0 = np.random.rand(3)
         exp_At, stable, eigenvalues, eigenvectors, sol_y = solve3x3.solve_system_3x3(A, Y0)
 
@@ -133,7 +132,7 @@ elif option == "3x3":
 
         col2.markdown("### Resultados")
         res1, res2 = col2.columns(2)
-        res1.markdown("#### Matriz exponencial:  $e^{At}$:")
+        res1.markdown("##### Matriz exponencial  $e^{At}$:")
         res1.table(
             np.vectorize(lambda x: f"{x:.2e}" if abs(x) >= 1e7 or abs(x) < 1e-7 else x)(
                 exp_At
@@ -180,8 +179,8 @@ elif option == "3x3":
         res4.table(eigenvectors_display)
 
         res3.markdown("#### Soluciones del sistema:")
-        # Now we call the updated get_solutions_3x3, which returns $$ ... $$
+        
         solutions = solve3x3.get_solutions_3x3(eigenvalues, eigenvectors, Y0)
         for solution in solutions:
-            # Use unsafe_allow_html so that $$ ... $$ is interpreted as math block:
+            
             col2.markdown(solution, unsafe_allow_html=True)

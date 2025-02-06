@@ -34,7 +34,7 @@ class Solve3x3:
         is_complex = any(np.iscomplex(ev) and abs(ev.imag) > 1e-14 for ev in eigenvalues)
         t = sp.Symbol("t", real=True)
 
-        # --- Complex eigenvalues case ---
+        # --- Valores Propios Complejos ---
         if is_complex:
             complex_eigs = [ev for ev in eigenvalues if np.iscomplex(ev) and abs(ev.imag) > 1e-14]
             real_eigs = [ev for ev in eigenvalues if abs(ev.imag) < 1e-14]
@@ -57,7 +57,7 @@ class Solve3x3:
             solutions.append(f"$$ x(t) = {latex_expr} $$")
             return solutions
 
-        # --- Distinct real eigenvalues case ---
+        # --- Valores Propios Reales Distintos ---
         if len(count_eigenvalues) == 3:
             try:
                 P_inv = np.linalg.inv(eigenvectors)
@@ -84,7 +84,7 @@ class Solve3x3:
                 solutions.append("$$ x(t) = P\\,e^{D t}\\,P^{-1}c,\\text{ pero }P\\text{ no es invertible.} $$")
                 return solutions
 
-        # --- Repeated eigenvalues (Jordan-block) case ---
+        # --- Valores Propios Repetidos ---
         else:
             try:
                 P_inv = np.linalg.inv(eigenvectors)
@@ -129,6 +129,5 @@ class Solve3x3:
         )
         fig.update_layout(
             scene=dict(xaxis_title="X", yaxis_title="Y", zaxis_title="Z"),
-            title="Diagrama de Fase en 3D",
         )
         st.plotly_chart(fig)

@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from typing import Tuple, List
 from logic.error import *
 
-
 class RungeKutta:
     def __init__(
         self,
@@ -34,7 +33,6 @@ class RungeKutta:
             raise Parentesis_Error()
 
     def edo(self, vars: dict) -> float:
-
         variables = {"e": 2.718281828459045, "pi": 3.141592653589793}
         for key, value in vars.items():
             variables[key] = value
@@ -42,21 +40,9 @@ class RungeKutta:
 
     def solver_rk3(self) -> Tuple[List[float], List[float]]:
         try:
-
-            """
-            la tabla de butcher usada  para orden 3 fue:
-            0   |
-            1/2 | 1/2
-            1   | -1   2
-                |______________
-                |1/6  2/3  1/6
-            """
             X_right = np.arange(self.x0, self.xf, self.h)
-
             y_right = np.zeros(len(X_right))
-
             y_right[0] = self.y0
-            #### Runge-Kutta 3
             for i in range(len(X_right) - 1):
                 k1 = self.edo({"x": X_right[i], "y": y_right[i]})
                 k2 = self.edo(
@@ -69,7 +55,6 @@ class RungeKutta:
                     }
                 )
                 y_right[i + 1] = y_right[i] + self.h * (k1 / 6 + (2 * k2 / 3) + k3 / 6)
-            # si hay 1 nan o inf va a devolver un error
             if any(np.isinf(y_right)) or any(np.isnan(y_right)):
                 raise Inf()
             return X_right, y_right
@@ -82,29 +67,15 @@ class RungeKutta:
         except RuntimeWarning as e:
             raise RuntimeWarning(
                 "Esta función alcanza valores muy altos en este intervalo."
-            )  ## esto es que alcanza valores muy altoss en ese intervalo.. no se debe mostrar
+            )
         except Exception as e:
             raise RK_Error()
 
     def solver_rk4(self) -> Tuple[List[float], List[float]]:
         try:
-
-            """
-             la tabla de butcher usada para orden 4 fue:
-            0   |
-            1/2 | 1/2
-            1/2 |  0  1/2
-             1  |  0   0    1
-                |___________________
-                |1/6  1/3  1/3   1/6
-
-            """
             X_right = np.arange(self.x0, self.xf, self.h)
-
             y_right = np.zeros(len(X_right))
-
             y_right[0] = self.y0
-            #### Runge-Kutta 4
             for i in range(len(X_right) - 1):
                 k1 = self.edo({"x": X_right[i], "y": y_right[i]})
                 k2 = self.edo(
@@ -117,7 +88,6 @@ class RungeKutta:
                 y_right[i + 1] = y_right[i] + self.h * (
                     k1 / 6 + k2 / 3 + k3 / 3 + k4 / 6
                 )
-            # si hay 1 nan o inf va a devolver un error
             if any(np.isinf(y_right)) or any(np.isnan(y_right)):
                 raise Inf()
             return X_right, y_right
@@ -130,14 +100,13 @@ class RungeKutta:
         except RuntimeWarning as e:
             raise RuntimeWarning(
                 "Esta función alcanza valores muy altos en este intervalo."
-            )  ## esto es que alcanza valores muy altoss en ese intervalo.. no se debe mostrar
+            )
         except Exception as e:
             raise RK_Error()
 
     def isoclinas(
         self, x_min, x_max, y_min, y_max, scale_factor: float = 1
     ) -> Tuple[List[float], List[float], List[float], List[float]]:
-
         density = int(30 / scale_factor)
         x_values = np.linspace(x_min, x_max, density)
         y_values = np.linspace(y_min, y_max, density)
@@ -146,19 +115,15 @@ class RungeKutta:
         V = self.edo({"x": X, "y": Y})
         if isinstance(V, np.ndarray):
             aux = V.copy().flatten()
-            # Si hay aunque sea 1 NaN o Inf, va a devolver un error
             if any(np.isinf(aux)) or any(np.isnan(aux)):
                 raise Inf()
         else:
             V = np.array(V)
-
         arrow_length = 0.1 * scale_factor
         U_scaled = U * arrow_length
         V_scaled = V * arrow_length
-
         U_scaled = np.clip(U_scaled, x_min - X, x_max - X)
         V_scaled = np.clip(V_scaled, y_min - Y, y_max - Y)
-
         return (
             X.flatten().tolist(),
             Y.flatten().tolist(),

@@ -38,7 +38,7 @@ class Sup:
             return (
                 sp.latex(sol_homogenea),
                 f_numeric,
-            )  # f_numeric, es la funcion resultado numerica ya, le puedes hacer f_numeric(numeros)
+            )  
 
         rhs = array[-1]
         ode_no_homogenea = sum(coef * y(x).diff(x, grado) for coef, grado in array[:-1])
@@ -52,11 +52,7 @@ class Sup:
         return (
             sp.latex(sol_no_homogenea),
             f_numeric,
-        )  # f_numeric, es la funcion resultado numerica ya, le puedes hacer f_numeric(numeros)
+        )  
 
 
-# ejemplo
-sup = Sup()
-# sup.get_solution([(2, 2), (1, 1)], [1, 2])
-# tienes que limitar las opciones de las no homogenias, xq necesitas pasarlas simbolicamete con sympy
-# sup.get_solution([(2, 2), (1, 1), sp.sin(sp.symbols("x"))], [1, 2], False)
+
