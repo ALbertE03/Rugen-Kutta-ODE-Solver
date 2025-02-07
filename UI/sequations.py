@@ -38,14 +38,18 @@ if option == "2x2":
 
         col2.markdown("### Resultados")
         res1, res2 = col2.columns(2)
-        res1.markdown("##### Matriz exponencial  $e^{At}$:")
         exp_At, stable, eigenvalues, eigenvectors, sol_y = solve2x2.solve_system_2x2(A)
-        res1.table(
-            np.vectorize(lambda x: f"{x:.2e}" if abs(x) >= 1e7 or abs(x) < 1e-7 else x)(
-                exp_At
-            )
-        )
 
+        formatted_matrix = np.vectorize(
+            lambda x: f"{x:.2e}" if abs(x) >= 1e7 or abs(x) < 1e-7 else f"{x:.2f}"
+        )(exp_At)
+        latex_matrix = (
+            r"\begin{bmatrix}"
+            + r" \\ ".join([" & ".join(map(str, row)) for row in formatted_matrix])
+            + r"\end{bmatrix}"
+        )
+        res1.markdown("##### Matriz exponencial  $e^{At}$:")
+        res1.latex(latex_matrix)
         res2.markdown("#### Estabilidad:")
         res2.write("El sistema es estable" if stable else "El sistema no es estable")
         if not stable:
@@ -56,20 +60,26 @@ if option == "2x2":
         col2.markdown("---")
         res3, res4 = col2.columns(2)
         res3.markdown("#### Valores propios:")
-        eigenvalues_display = [
-            (
-                f"{val.real:.3f}".rstrip("0").rstrip(".")
-                + (
-                    f" + {val.imag:.3f}i".rstrip("0").rstrip(".")
-                    if val.imag > 0
-                    else f" - {-val.imag:.3f}i".rstrip("0").rstrip(".")
-                )
-                if val.imag != 0
-                else f"{val.real:.3f}".rstrip("0").rstrip(".")
+        eigenvalues_matrix = (
+            r"\begin{bmatrix}"
+            + r" \\ ".join(
+                [
+                    (
+                        f"{val.real:.3f}".rstrip("0").rstrip(".")
+                        + (
+                            f" + {val.imag:.3f}i".rstrip("0").rstrip(".")
+                            if val.imag > 0
+                            else f" - {-val.imag:.3f}i".rstrip("0").rstrip(".")
+                        )
+                        if val.imag != 0
+                        else f"{val.real:.3f}".rstrip("0").rstrip(".")
+                    )
+                    for val in eigenvalues
+                ]
             )
-            for val in eigenvalues
-        ]
-        res3.table(eigenvalues_display)
+            + r"\end{bmatrix}"
+        )
+        res3.latex(eigenvalues_matrix)
 
         res4.markdown("#### Vectores propios:")
         eigenvectors_display = [
@@ -83,7 +93,12 @@ if option == "2x2":
             ]
             for row in eigenvectors
         ]
-        res4.table(eigenvectors_display)
+        eigenvectors_matrix = (
+            r"\begin{bmatrix}"
+            + r" \\ ".join([" & ".join(row) for row in eigenvectors_display])
+            + r"\end{bmatrix}"
+        )
+        res4.latex(eigenvectors_matrix)
 
         res3.markdown("#### Soluciones del sistema:")
         solutions = solve2x2.get_solutions_2x2(eigenvalues, eigenvectors, A)
@@ -135,12 +150,15 @@ elif option == "3x3":
         col2.markdown("### Resultados")
         res1, res2 = col2.columns(2)
         res1.markdown("##### Matriz exponencial  $e^{At}$:")
-        res1.table(
-            np.vectorize(lambda x: f"{x:.2e}" if abs(x) >= 1e7 or abs(x) < 1e-7 else x)(
-                exp_At
-            )
+        formatted_matrix = np.vectorize(
+            lambda x: f"{x:.2e}" if abs(x) >= 1e7 or abs(x) < 1e-7 else f"{x:.2f}"
+        )(exp_At)
+        latex_matrix = (
+            r"\begin{bmatrix}"
+            + r" \\ ".join([" & ".join(map(str, row)) for row in formatted_matrix])
+            + r"\end{bmatrix}"
         )
-
+        res1.latex(latex_matrix)
         res2.markdown("#### Estabilidad:")
         res2.write("El sistema es estable" if stable else "El sistema no es estable")
         if not stable:
@@ -151,20 +169,26 @@ elif option == "3x3":
         col2.markdown("---")
         res3, res4 = col2.columns(2)
         res3.markdown("#### Valores propios:")
-        eigenvalues_display = [
-            (
-                f"{val.real:.3f}".rstrip("0").rstrip(".")
-                + (
-                    f" + {val.imag:.3f}i".rstrip("0").rstrip(".")
-                    if val.imag > 0
-                    else f" - {-val.imag:.3f}i".rstrip("0").rstrip(".")
-                )
-                if val.imag != 0
-                else f"{val.real:.3f}".rstrip("0").rstrip(".")
+        eigenvalues_matrix = (
+            r"\begin{bmatrix}"
+            + r" \\ ".join(
+                [
+                    (
+                        f"{val.real:.3f}".rstrip("0").rstrip(".")
+                        + (
+                            f" + {val.imag:.3f}i".rstrip("0").rstrip(".")
+                            if val.imag > 0
+                            else f" - {-val.imag:.3f}i".rstrip("0").rstrip(".")
+                        )
+                        if val.imag != 0
+                        else f"{val.real:.3f}".rstrip("0").rstrip(".")
+                    )
+                    for val in eigenvalues
+                ]
             )
-            for val in eigenvalues
-        ]
-        res3.table(eigenvalues_display)
+            + r"\end{bmatrix}"
+        )
+        res3.latex(eigenvalues_matrix)
 
         res4.markdown("#### Vectores propios:")
         eigenvectors_display = [
@@ -178,8 +202,12 @@ elif option == "3x3":
             ]
             for row in eigenvectors
         ]
-        res4.table(eigenvectors_display)
-
+        eigenvectors_matrix = (
+            r"\begin{bmatrix}"
+            + r" \\ ".join([" & ".join(row) for row in eigenvectors_display])
+            + r"\end{bmatrix}"
+        )
+        res4.latex(eigenvectors_matrix)
         res3.markdown("#### Soluciones del sistema:")
 
         solutions = solve3x3.get_solutions_3x3(eigenvalues, eigenvectors, A)
