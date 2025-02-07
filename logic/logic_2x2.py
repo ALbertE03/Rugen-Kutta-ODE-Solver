@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import sympy as sp
 
+
 class Solve2x2:
     def __init__(self):
         pass
@@ -62,144 +63,23 @@ class Solve2x2:
         return matrix_str
 
     def get_solutions_2x2(self, eigenvalues, eigenvectors, A):
-        solutions = []
+        t = sp.symbols("t")
+        x = sp.Function("x")(t)
+        y = sp.Function("y")(t)
+        z = sp.Function("z")(t)
 
-        if A[0][1] == 0 and A[1][1] == 0:
-            new_A = A
-            r = []
-            for i in range(len(new_A)):
-                aux = []
-                for j in range(len(new_A)):
-                    if i == j:
-                        aux.append(f"e^{{{self.format_number(new_A[i][j])}t}}")
-                    else:
-                        aux.append("0")
-                r.append(aux)
-            mat_str = self.format_latex_string_matrix(r)
-            solutions.append(f"x(t) = {mat_str} c")
-            return solutions
+        x_p = x.diff(t)
+        y_p = y.diff(t)
+        z_p = z.diff(t)
+        A_2x2 = sp.Matrix(A)
+        f = sp.Matrix([x, y])
+        f_p = sp.Matrix([x_p, y_p])
 
-        if A[0][0] == A[1][1] and A[0][1] + A[1][0] == 0:
-            a_str = self.format_number(A[0][0], 2)
-            b_str = self.format_number(abs(A[1][0]), 2)
-            b = A[1][0]
-            x1 = (
-                rf"x_1(t) = e^{{({a_str})t}}\bigl(c_1\cos({b_str}t) "
-                + rf"{'-' if b>0 else '+'} c_2\sin({b_str}t)\bigr)"
-            )
-            x2 = (
-                rf"x_2(t) = e^{{({a_str})t}}\bigl(c_1\sin({b_str}t) "
-                + rf"{'+' if b>0 else '-'} c_2\cos({b_str}t)\bigr)"
-            )
-            solutions.append(x1)
-            solutions.append(x2)
-            return solutions
-
-        # Valores Propios Repetidos 
-        if abs(eigenvalues[0] - eigenvalues[1]) < 1e-14:
-            lambda_val = eigenvalues[0]
-            try:
-                P_inv = np.linalg.inv(eigenvectors)
-            except np.linalg.LinAlgError:
-                P_inv = None
-            rank_ev = np.linalg.matrix_rank(eigenvectors)
-            if rank_ev < 2:
-                
-                if P_inv is not None:
-                    t = sp.Symbol("t", real=True)
-                    exp_lt = sp.exp(lambda_val * t)
-                    J_exp = sp.Matrix([
-                        [exp_lt, t*exp_lt],
-                        [0,      exp_lt]
-                    ])
-                    P_sym = sp.Matrix(eigenvectors)
-                    P_inv_sym = sp.Matrix(P_inv)
-                    full_exp = P_sym * J_exp * P_inv_sym
-                    full_exp_approx = full_exp.evalf(3)
-                    latex_str = sp.latex(full_exp_approx, mat_delim="(", mat_str="pmatrix")
-                    solutions.append(f"$$ x(t) = {latex_str} \\, c $$")
-                    return solutions
-                else:
-                    solutions.append("$$ x(t) = P e^{J t} P^{-1} c, \\text{ no invertible }P. $$")
-                    return solutions
-            else:
-                
-                try:
-                    P_inv = np.linalg.inv(eigenvectors)
-                except np.linalg.LinAlgError:
-                    P_inv = None
-                if P_inv is not None:
-                    t = sp.Symbol("t", real=True)
-                    exp_lt = sp.exp(lambda_val * t)
-                    D_exp = sp.diag(exp_lt, exp_lt)
-                    P_sym = sp.Matrix(eigenvectors)
-                    P_inv_sym = sp.Matrix(P_inv)
-                    full_exp = P_sym * D_exp * P_inv_sym
-                    full_exp_approx = full_exp.evalf(3)
-                    latex_str = sp.latex(full_exp_approx, mat_delim="(", mat_str="pmatrix")
-                    solutions.append(f"$$ x(t) = {latex_str} \\, c $$")
-                    return solutions
-                else:
-                    solutions.append("$$ x(t) = P e^{D t} P^{-1} c, \\text{ no invertible }P. $$")
-                    return solutions
-
-        if abs(eigenvalues[0].imag) < 1e-20 and abs(eigenvalues[1].imag) < 1e-20:
-            try:
-                P_inv = np.linalg.inv(eigenvectors)
-            except:
-                P_inv = "P^{-1}"
-            if not isinstance(P_inv, str):
-                new_A = np.einsum("ij,jk,kl->il", eigenvectors, A, P_inv)
-                r = []
-                for i in range(len(new_A)):
-                    aux = []
-                    for j in range(len(new_A)):
-                        if i == j:
-                            val = self.format_complex(new_A[i][j], 2)
-                            aux.append(f"e^{{({val})t}}")
-                        else:
-                            aux.append("0")
-                    r.append(aux)
-                P_str = self.format_latex_complex_matrix(eigenvectors)
-                r_str = self.format_latex_string_matrix(r)
-                P_inv_str = self.format_latex_complex_matrix(P_inv)
-                solutions.append(f"x(t) = {P_str} {r_str} {P_inv_str} c")
-                return solutions
-            else:
-                solutions.append(
-                    f"{eigenvectors}{A}{P_inv}c, ocurrió un error al calcular la inversa."
-                )
-                return solutions
-        else:
-            try:
-                P = eigenvectors
-                P_inv = np.linalg.inv(P)
-            except:
-                P_inv = "P^{-1}"
-            if not isinstance(P_inv, str):
-                Sol = np.einsum("ij,jk,kl->il", eigenvectors, A, P_inv)
-                aux = [
-                    [
-                        f"e^{{({self.format_complex(Sol[0][0])})t}}cos({self.format_complex(Sol[0][1])}t)",
-                        f"-e^{{({self.format_complex(Sol[0][0])})t}}sen({self.format_complex(Sol[0][1])}t)",
-                    ],
-                    [
-                        f"e^{{({self.format_complex(Sol[1][0])})t}}sen({self.format_complex(Sol[1][1])}t)",
-                        f"e^{{({self.format_complex(Sol[1][0])})t}}cos({self.format_complex(Sol[1][1])}t)",
-                    ],
-                ]
-                P_str = self.format_latex_complex_matrix(P)
-                aux_str = self.format_latex_string_matrix(aux)
-                P_inv_str = self.format_latex_complex_matrix(P_inv)
-                solutions.append(f"x(t) = {P_str} {aux_str} {P_inv_str} c")
-                return solutions
-            else:
-                solutions.append(
-                    f"{eigenvectors}{A}{P_inv}c, no se pudo invertir P."
-                )
-                return solutions
-
-        return solutions
+        eqs = f_p - A_2x2 * f
+        eq1 = sp.Eq(eqs[0], 0)
+        eq2 = sp.Eq(eqs[1], 0)
+        sol = sp.dsolve([eq1, eq2], [x, y])
+        return sol
 
     def system_2x2(self, t, Y, A):
         return A @ Y

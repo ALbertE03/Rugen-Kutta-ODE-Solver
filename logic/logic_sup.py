@@ -24,35 +24,53 @@ class Sup:
         x = sp.symbols("x")
         y = sp.Function("y")
         C_symbols = sp.symbols(f"C1:{len(cond_iniciales) + 1}")
-        if HOMOG:
 
+        if HOMOG:
             ode_homogenea = sum(coef * y(x).diff(x, grado) for coef, grado in array)
             sol_homogenea = sp.dsolve(sp.Eq(ode_homogenea, 0), y(x))
 
             expr = sol_homogenea.rhs
+
+            ecuaciones = []
             for i, cond in enumerate(cond_iniciales):
-                expr = expr.subs(C_symbols[i], cond)
+                derivada = expr.diff(x, i)
+                ecuaciones.append(derivada.subs(x, 0) - cond)
 
-            f_numeric = sp.lambdify(x, expr, "numpy")
+            constantes = sp.solve(ecuaciones, C_symbols)
 
+            sol_particular = expr.subs(constantes)
+            # sol_particular_simplificada = sp.simplify(sol_particular)
+            f_numeric_simplificado = sp.lambdify(x, sol_particular, "numpy")
             return (
                 sp.latex(sol_homogenea),
-                f_numeric,
-            )  
+                f_numeric_simplificado,
+            )
 
-        rhs = array[-1]
-        ode_no_homogenea = sum(coef * y(x).diff(x, grado) for coef, grado in array[:-1])
+        else:
 
-        sol_no_homogenea = sp.dsolve(sp.Eq(ode_no_homogenea, rhs), y(x))
-        expr = sol_no_homogenea.rhs
-        for i, cond in enumerate(cond_iniciales):
-            expr = expr.subs(C_symbols[i], cond)
-        f_numeric = sp.lambdify(x, expr, "numpy")
+            rhs = array[-1]
+            ode_no_homogenea = sum(
+                coef * y(x).diff(x, grado) for coef, grado in array[:-1]
+            )
+            print(rhs)
+            sol_no_homogenea = sp.dsolve(sp.Eq(ode_no_homogenea, rhs), y(x))
 
-        return (
-            sp.latex(sol_no_homogenea),
-            f_numeric,
-        )  
+            expr = sol_no_homogenea.rhs
 
+            ecuaciones = []
+            for i, cond in enumerate(cond_iniciales):
 
+                derivada = expr.diff(x, i)
+                ecuaciones.append(derivada.subs(x, 0) - cond)
 
+            constantes = sp.solve(ecuaciones, C_symbols)
+
+            sol_particular = expr.subs(constantes)
+            sol_particular_simplificada = sp.simplify(sol_particular)
+            f_numeric_simplificado = sp.lambdify(
+                x, sol_particular_simplificada, "numpy"
+            )
+            return (
+                sp.latex(sol_particular_simplificada),
+                f_numeric_simplificado,
+            )

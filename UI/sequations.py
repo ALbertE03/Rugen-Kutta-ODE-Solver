@@ -3,6 +3,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 from logic.logic_2x2 import Solve2x2
 from logic.logic_3x3 import Solve3x3
+import sympy as sp
 
 solve2x2 = Solve2x2()
 solve3x3 = Solve3x3()
@@ -86,9 +87,8 @@ if option == "2x2":
 
         res3.markdown("#### Soluciones del sistema:")
         solutions = solve2x2.get_solutions_2x2(eigenvalues, eigenvectors, A)
-        for solution in solutions:
-            
-            col2.markdown(f"${solution}$")
+        col2.markdown(f"${sp.latex(solutions[0])}$")
+        col2.markdown(f"${sp.latex(solutions[1])}$")
 
 
 elif option == "3x3":
@@ -122,9 +122,11 @@ elif option == "3x3":
     A = np.array(matrix)
 
     if col1.button("Graficar"):
-       
+
         Y0 = np.random.rand(3)
-        exp_At, stable, eigenvalues, eigenvectors, sol_y = solve3x3.solve_system_3x3(A, Y0)
+        exp_At, stable, eigenvalues, eigenvectors, sol_y = solve3x3.solve_system_3x3(
+            A, Y0
+        )
 
         col1.markdown("### Diagrama de Fase 3D")
         with col1:
@@ -179,8 +181,8 @@ elif option == "3x3":
         res4.table(eigenvectors_display)
 
         res3.markdown("#### Soluciones del sistema:")
-        
-        solutions = solve3x3.get_solutions_3x3(eigenvalues, eigenvectors, Y0)
-        for solution in solutions:
-            
-            col2.markdown(solution, unsafe_allow_html=True)
+
+        solutions = solve3x3.get_solutions_3x3(eigenvalues, eigenvectors, A)
+        col2.markdown(f"${sp.latex(solutions[0])}$")
+        col2.markdown(f"${sp.latex(solutions[1])}$")
+        col2.markdown(f"${sp.latex(solutions[2])}$")
