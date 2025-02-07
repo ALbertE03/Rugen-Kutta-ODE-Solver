@@ -13,63 +13,81 @@ st.title("EDO de Orden Superior")
 left_col, right_col = st.columns([1, 2])
 
 with left_col:
-    tipo_edo = st.radio("Tipo de Ecuación:", ("Ecuación Homogénea", "Ecuación No Homogénea"))
-    order = st.number_input("Orden (n)", min_value=1, max_value=10, value=2, step=1)
-
-    coefs = []
-    for i in range(order, -1, -1):
-        val = st.number_input(f"Coeficiente a_{i}", value=(1.0 if i == order else 0.0), format="%.2f")
-        coefs.append(val)
-
-    f_expr = "0"
-    if tipo_edo == "Ecuación No Homogénea":
-        f_expr = st.text_input("f(x)", "sin(x)")
-
-    cond_iniciales = []
-    for i in range(order):
-        ci_val = st.number_input(
-            f"Condición inicial (derivada de orden {i} en x=0)",
-            value=1.0, format="%.2f"
+    with st.container(border=True):
+        tipo_edo = st.radio(
+            "Tipo de Ecuación:", ("Ecuación Homogénea", "Ecuación No Homogénea")
         )
-        cond_iniciales.append(ci_val)
+        order = st.number_input("Orden (n)", min_value=1, max_value=10, value=2, step=1)
 
-    boton_resolver = st.button("Resolver")
+        coefs = []
+        for i in range(order, -1, -1):
+            val = st.number_input(
+                f"Coeficiente a_{i}", value=(1.0 if i == order else 0.0), format="%.2f"
+            )
+            coefs.append(val)
+
+        f_expr = "0"
+        if tipo_edo == "Ecuación No Homogénea":
+            f_expr = st.text_input("f(x)", "sin(x)")
+            HOMOG = True
+        cond_iniciales = []
+        for i in range(order):
+            ci_val = st.number_input(
+                f"Condición inicial (derivada de orden {i} en x=0)",
+                value=1.0,
+                format="%.2f",
+            )
+            cond_iniciales.append(ci_val)
+
+        boton_resolver = st.button("Resolver")
+        with st.expander("Instrucciones"):
+            st.write("Instrucciones")
 
 with right_col:
-    if boton_resolver:
-        array = []
-        for i in range(order + 1):
-            grado = order - i
-            array.append((coefs[i], grado))
+    try:
+        if boton_resolver:
+            array = []
+            for i in range(order + 1):
+                grado = order - i
+                array.append((coefs[i], grado))
 
-        HOMOG = (tipo_edo == "Ecuación Homogénea")
+            HOMOG = tipo_edo == "Ecuación Homogénea"
 
-        if not HOMOG:
-            array_non_hom = array[:-1]
-            array_non_hom.append(sp.sympify(f_expr))
-            array = array_non_hom
+            if not HOMOG:
+                array_non_hom = array[:]
+                array_non_hom.append(
+                    sp.sympify(
+                        f_expr.replace("arctan", "atan")
+                        .replace("arcsin(x)", "asin(x)")
+                        .replace("arccos(x)", "acos(x)")
+                        .replace("ln(x)", "log(x)")
+                        .replace("sen(x)", "sin(x)")
+                    )
+                )
+                array = array_non_hom[:]
+            sol_tex, sol_func = sup.get_solution(array, cond_iniciales, HOMOG)
 
-        sol_tex, sol_func = sup.get_solution(array, cond_iniciales, HOMOG)
+            st.markdown("### Gráfica de la solución")
+            xs = np.linspace(0, 10, 200)
+            ys = [sol_func(xv) for xv in xs]
 
-        st.markdown("### Gráfica de la solución")
-        xs = np.linspace(0, 10, 200)
-        ys = [sol_func(xv) for xv in xs]
+            df = pd.DataFrame({"x": xs, "y": ys})
 
-        df = pd.DataFrame({"x": xs, "y": ys})
-
-        chart = (
-            alt.Chart(df)
-            .mark_line()
-            .encode(
-                x=alt.X("x", title="x"),
-                y=alt.Y("y", title="y(x)"),
-                tooltip=["x", "y"]
+            chart = (
+                alt.Chart(df)
+                .mark_line()
+                .encode(
+                    x=alt.X("x", title="x"),
+                    y=alt.Y("y", title="y(x)"),
+                    tooltip=["x", "y"],
+                )
+                .interactive()
+                .properties(width="container", height=400)
             )
-            .interactive()
-            .properties(width="container", height=400)
-        )
 
-        st.altair_chart(chart, use_container_width=True)
+            st.altair_chart(chart, use_container_width=True)
 
-        st.markdown("### Solución simbólica")
-        st.latex(sol_tex)
+            st.markdown("### Solución simbólica")
+            st.latex(sol_tex)
+    except:
+        st.markdown(f"# Escriba correctamente f:{f_expr} o simpliflíquela.")

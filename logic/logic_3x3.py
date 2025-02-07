@@ -4,15 +4,16 @@ import streamlit as st
 import plotly.graph_objects as go
 from scipy.integrate import solve_ivp
 
+
 class Solve3x3:
     def __init__(self):
         pass
 
     def matrix_exponential(self, A, t):
         n = A.shape[0]
-        exp_At = np.eye(n) + A*t
+        exp_At = np.eye(n) + A * t
         for k in range(2, 20):
-            exp_At += np.linalg.matrix_power(A*t, k) / np.math.factorial(k)
+            exp_At += np.linalg.matrix_power(A * t, k) / np.math.factorial(k)
         return exp_At
 
     def system_3x3(self, t, Y, A):
@@ -31,12 +32,16 @@ class Solve3x3:
         solutions = []
         unique_vals, counts = np.unique(eigenvalues, return_counts=True)
         count_eigenvalues = dict(zip(unique_vals, counts))
-        is_complex = any(np.iscomplex(ev) and abs(ev.imag) > 1e-14 for ev in eigenvalues)
+        is_complex = any(
+            np.iscomplex(ev) and abs(ev.imag) > 1e-14 for ev in eigenvalues
+        )
         t = sp.Symbol("t", real=True)
 
         # --- Valores Propios Complejos ---
         if is_complex:
-            complex_eigs = [ev for ev in eigenvalues if np.iscomplex(ev) and abs(ev.imag) > 1e-14]
+            complex_eigs = [
+                ev for ev in eigenvalues if np.iscomplex(ev) and abs(ev.imag) > 1e-14
+            ]
             real_eigs = [ev for ev in eigenvalues if abs(ev.imag) < 1e-14]
             if len(real_eigs) > 0:
                 real_val = round(real_eigs[0].real, 3)
@@ -50,8 +55,10 @@ class Solve3x3:
             v2 = sp.Matrix(v[3:6].real)
             v3 = sp.Matrix(v[6:9].real)
             c1, c2, c3 = sp.symbols("c1 c2 c3", real=True)
-            part1 = c1*sp.exp(real_val*t)*v1
-            part2 = sp.exp(alpha*t)*(c2*sp.cos(beta*t)*v2 + c3*sp.sin(beta*t)*v3)
+            part1 = c1 * sp.exp(real_val * t) * v1
+            part2 = sp.exp(alpha * t) * (
+                c2 * sp.cos(beta * t) * v2 + c3 * sp.sin(beta * t) * v3
+            )
             total_solution = (part1 + part2).evalf(3)
             latex_expr = sp.latex(total_solution, mat_delim="(", mat_str="pmatrix")
             solutions.append(f"$$ x(t) = {latex_expr} $$")
@@ -71,9 +78,7 @@ class Solve3x3:
                 lam2 = round(eigenvalues[1].real, 3)
                 lam3 = round(eigenvalues[2].real, 3)
                 exp_diag = sp.diag(
-                    sp.exp(lam1*t),
-                    sp.exp(lam2*t),
-                    sp.exp(lam3*t)
+                    sp.exp(lam1 * t), sp.exp(lam2 * t), sp.exp(lam3 * t)
                 ).evalf(3)
                 p_str = sp.latex(spP, mat_delim="(", mat_str="pmatrix")
                 p_inv_str = sp.latex(spPinv, mat_delim="(", mat_str="pmatrix")
@@ -81,7 +86,9 @@ class Solve3x3:
                 solutions.append(f"$$ x(t) = {p_str} {exp_diag_str} {p_inv_str} c $$")
                 return solutions
             else:
-                solutions.append("$$ x(t) = P\\,e^{D t}\\,P^{-1}c,\\text{ pero }P\\text{ no es invertible.} $$")
+                solutions.append(
+                    "$$ x(t) = P\\,e^{D t}\\,P^{-1}c,\\text{ pero }P\\text{ no es invertible.} $$"
+                )
                 return solutions
 
         # --- Valores Propios Repetidos ---

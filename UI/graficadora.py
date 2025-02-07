@@ -36,6 +36,7 @@ with plot_col:
         if equation_str:
             try:
                 rk_solver = RungeKutta(x0, y0, xf, h, equation_str)
+                print(f"f: parseada: {rk_solver.ast}")
                 X, Y = rk_solver.solver_rk4()
                 x_min, x_max = x0, xf
                 y_min, y_max = min(Y), max(Y)
@@ -79,8 +80,8 @@ with plot_col:
                     rk_solver_3 = RungeKutta(x0, y0, xf, h, equation_str)
                     X3, Y3 = rk_solver_3.solver_rk3()
 
-                    y_min = min(y_min, min(Y3))  
-                    y_max = max(y_max, max(Y3))  
+                    y_min = min(y_min, min(Y3))
+                    y_max = max(y_max, max(Y3))
 
                     line_data3 = pd.DataFrame({"x": X3, "y": Y3})
                     line_chart3 = (
@@ -92,9 +93,9 @@ with plot_col:
                         )
                     )
 
-                    combined_chart = alt.layer(line_chart, line_chart3, arrows).properties(
-                        width=600, height=400
-                    )
+                    combined_chart = alt.layer(
+                        line_chart, line_chart3, arrows
+                    ).properties(width=600, height=400)
 
                 st.altair_chart(combined_chart, use_container_width=True)
 
