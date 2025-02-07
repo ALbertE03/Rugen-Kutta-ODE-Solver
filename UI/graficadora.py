@@ -52,16 +52,15 @@ with plot_col:
                     {"x": X_iso, "y": Y_iso, "u": U_iso, "v": V_iso}
                 )
 
-                if "line_chartrk_4" not in st.session_state:
-                    line_chart = (
-                        alt.Chart(line_data)
-                        .mark_line()
-                        .encode(
-                            x=alt.X("x:Q", scale=alt.Scale(domain=(x_min, x_max))),
-                            y=alt.Y("y:Q", scale=alt.Scale(domain=(y_min, y_max))),
-                        )
+                line_chart = (
+                    alt.Chart(line_data)
+                    .mark_line()
+                    .encode(
+                        x=alt.X("x:Q", scale=alt.Scale(domain=(x_min, x_max))),
+                        y=alt.Y("y:Q", scale=alt.Scale(domain=(y_min, y_max))),
                     )
-                    session_state.line_chartrk_4 = line_chart
+                )
+
                 arrow_length = 0.2 * scale_factor
                 quiver_data["x2"] = quiver_data["x"] + quiver_data["u"] * arrow_length
                 quiver_data["y2"] = quiver_data["y"] + quiver_data["v"] * arrow_length
@@ -74,13 +73,13 @@ with plot_col:
                     .encode(x="x:Q", y="y:Q", x2="x2:Q", y2="y2:Q")
                 )
                 if isoclinas:
-                    combined_chart = alt.layer(
-                        st.session_state.line_chartrk_4, arrows
-                    ).properties(width=600, height=400)
+                    combined_chart = alt.layer(line_chart, arrows).properties(
+                        width=600, height=400
+                    )
                 else:
-                    combined_chart = alt.layer(
-                        st.session_state.line_chartrk_4
-                    ).properties(width=600, height=400)
+                    combined_chart = alt.layer(line_chart).properties(
+                        width=600, height=400
+                    )
 
                 if comparar_pressed:
                     rk_solver_3 = RungeKutta(x0, y0, xf, h, equation_str)
@@ -90,25 +89,23 @@ with plot_col:
                     y_max = max(y_max, max(Y3))
 
                     line_data3 = pd.DataFrame({"x": X3, "y": Y3})
-                    if "line_chartrk_3" not in st.session_state:
-                        line_chart3 = (
-                            alt.Chart(line_data3)
-                            .mark_line(color="green")
-                            .encode(
-                                x=alt.X("x:Q", scale=alt.Scale(domain=(x_min, x_max))),
-                                y=alt.Y("y:Q", scale=alt.Scale(domain=(y_min, y_max))),
-                            )
+                    line_chart3 = (
+                        alt.Chart(line_data3)
+                        .mark_line(color="green")
+                        .encode(
+                            x=alt.X("x:Q", scale=alt.Scale(domain=(x_min, x_max))),
+                            y=alt.Y("y:Q", scale=alt.Scale(domain=(y_min, y_max))),
                         )
-                        st.session_state.line_chartrk_3 = line_chart3
+                    )
 
                     if isoclinas:
-                        combined_chart = alt.layer(
-                            st.session_state.line_chartrk_3, arrows
-                        ).properties(width=600, height=400)
+                        combined_chart = alt.layer(line_chart3, arrows).properties(
+                            width=600, height=400
+                        )
                     else:
-                        combined_chart = alt.layer(
-                            st.session_state.line_chartrk_3
-                        ).properties(width=600, height=400)
+                        combined_chart = alt.layer(line_chart3).properties(
+                            width=600, height=400
+                        )
                 st.altair_chart(combined_chart, use_container_width=True)
 
             except ValueError as e:
