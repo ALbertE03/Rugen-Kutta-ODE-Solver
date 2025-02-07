@@ -14,23 +14,25 @@ st.subheader("Graficadora")
 input_col, plot_col = st.columns([1, 2])
 
 with input_col:
-    with st.container(border=True):
-        equation_str = st.text_input(
-            "Ingresa la ecuación diferencial (ej. 'sen(x-y)'):", ""
-        )
 
-        col1, col2 = st.columns(2)
-        with col1:
-            x0 = st.number_input("Valor inicial de x (x0):", value=0.0)
-        with col2:
-            y0 = st.number_input("Valor inicial de y (y0):", value=1.0)
+    equation_str = st.text_input(
+        "Ingresa la ecuación diferencial (ej. 'sen(x-y)'):", ""
+    )
 
-        h = st.number_input("Paso de integración (h):", value=0.1)
-        xf = st.number_input("Valor final de x:", value=10.0)
-        isoclinas = st.toggle("isoclinas")
-        col1, col2 = st.columns(2)
-        resolver_pressed = col1.button("Resolver RK-4")
-        comparar_pressed = col2.button("Comparar RK-3")
+    col1, col2 = st.columns(2)
+    with col1:
+        x0 = st.number_input("Valor inicial de x (x0):", value=0.0)
+    with col2:
+        y0 = st.number_input("Valor inicial de y (y0):", value=1.0)
+
+    h = st.number_input("Paso de integración (h):", value=0.1)
+    xf = st.number_input("Valor final de x:", value=10.0)
+    isoclinas = st.toggle("isoclinas")
+    col1, col2 = st.columns(2)
+    resolver_pressed = col1.button("Resolver RK-4")
+    comparar_pressed = col2.button("Comparar RK-3")
+    with st.expander("Información"):
+        st.write("jola")
 
 with plot_col:
     if resolver_pressed or comparar_pressed:

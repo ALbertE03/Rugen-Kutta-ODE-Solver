@@ -23,56 +23,56 @@ st.title("EDO de Orden Superior")
 left_col, right_col = st.columns([1, 2])
 
 with left_col:
-    with st.container(border=True):
-        tipo_edo = st.radio(
-            "Tipo de Ecuación:", ("Ecuación Homogénea", "Ecuación No Homogénea")
+
+    tipo_edo = st.radio(
+        "Tipo de Ecuación:", ("Ecuación Homogénea", "Ecuación No Homogénea")
+    )
+    order = st.number_input("Orden (n)", min_value=2, max_value=5, value=2, step=1)
+
+    coefs = []
+    for i in range(order, -1, -1):
+        val = st.number_input(
+            f"Coeficiente a_{i}", value=(1.0 if i == order else 0.0), format="%.2f"
         )
-        order = st.number_input("Orden (n)", min_value=2, max_value=5, value=2, step=1)
+        coefs.append(val)
 
-        coefs = []
-        for i in range(order, -1, -1):
-            val = st.number_input(
-                f"Coeficiente a_{i}", value=(1.0 if i == order else 0.0), format="%.2f"
-            )
-            coefs.append(val)
+    f_expr = "0"
+    if tipo_edo == "Ecuación No Homogénea":
+        f_expr = st.selectbox(
+            "f(x)",
+            ["sin(x)", "e^(x)", "cos(x)", "x^n"],
+        )
+        HOMOG = True
+    if f_expr == "x^n":
+        x_n = st.number_input("n de x^n", min_value=1, value=1, step=1)
+        f_expr = f"x^{x_n}"
+    cond_iniciales = []
+    for i in range(order):
+        ci_val = st.number_input(
+            f"Condición inicial (derivada de orden {i} en x=0)",
+            value=1.0,
+            format="%.2f",
+        )
+        cond_iniciales.append(ci_val)
 
-        f_expr = "0"
-        if tipo_edo == "Ecuación No Homogénea":
-            f_expr = st.selectbox(
-                "f(x)",
-                ["sin(x)", "e^(x)", "cos(x)", "x^n"],
-            )
-            HOMOG = True
-        if f_expr == "x^n":
-            x_n = st.number_input("n de x^n", min_value=1, value=1, step=1)
-            f_expr = f"x^{x_n}"
-        cond_iniciales = []
-        for i in range(order):
-            ci_val = st.number_input(
-                f"Condición inicial (derivada de orden {i} en x=0)",
-                value=1.0,
-                format="%.2f",
-            )
-            cond_iniciales.append(ci_val)
+    boton_resolver = st.button("Resolver")
+    with st.expander("Información"):
+        HOMOG = tipo_edo == "Ecuación Homogénea"
+        if HOMOG:
+            st.info("Ecuaciones Homogénea")
+            print_latex()
 
-        boton_resolver = st.button("Resolver")
-        with st.expander("Información"):
-            HOMOG = tipo_edo == "Ecuación Homogénea"
-            if HOMOG:
-                st.info("Ecuaciones Homogénea")
-                print_latex()
-
-            else:
-                st.info("Ecuaciones No Homogénea")
-                print_latex()
-                st.latex(
-                    """
+        else:
+            st.info("Ecuaciones No Homogénea")
+            print_latex()
+            st.latex(
+                """
                 f(x) = e^x,sen(x),cos(x),\dots
                 """
-                )
-                st.markdown(
-                    " debido a la complejidad computacional solo se aceptarán las funciones elementales, **NO COMBINACIONES DE ELLAS**"
-                )
+            )
+            st.markdown(
+                " debido a la complejidad computacional solo se aceptarán las funciones elementales, **NO COMBINACIONES DE ELLAS**"
+            )
 
 with right_col:
     try:

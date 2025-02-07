@@ -29,98 +29,24 @@ class Solve3x3:
         return exp_At, stable, eigenvalues, eigenvectors, sol.y
 
     def get_solutions_3x3(self, eigenvalues, eigenvectors, A):
-        solutions = []
-        unique_vals, counts = np.unique(eigenvalues, return_counts=True)
-        count_eigenvalues = dict(zip(unique_vals, counts))
-        is_complex = any(
-            np.iscomplex(ev) and abs(ev.imag) > 1e-14 for ev in eigenvalues
-        )
-        t = sp.Symbol("t", real=True)
+        t = sp.symbols("t")
+        x = sp.Function("x")(t)
+        y = sp.Function("y")(t)
+        z = sp.Function("z")(t)
 
-        # --- Valores Propios Complejos ---
-        if is_complex:
-            complex_eigs = [
-                ev for ev in eigenvalues if np.iscomplex(ev) and abs(ev.imag) > 1e-14
-            ]
-            real_eigs = [ev for ev in eigenvalues if abs(ev.imag) < 1e-14]
-            if len(real_eigs) > 0:
-                real_val = round(real_eigs[0].real, 3)
-            else:
-                real_val = 0.0
-            cplx = complex_eigs[0]
-            alpha = round(cplx.real, 3)
-            beta = round(cplx.imag, 3)
-            v = np.array(eigenvectors).flatten()
-            v1 = sp.Matrix(v[0:3].real)
-            v2 = sp.Matrix(v[3:6].real)
-            v3 = sp.Matrix(v[6:9].real)
-            c1, c2, c3 = sp.symbols("c1 c2 c3", real=True)
-            part1 = c1 * sp.exp(real_val * t) * v1
-            part2 = sp.exp(alpha * t) * (
-                c2 * sp.cos(beta * t) * v2 + c3 * sp.sin(beta * t) * v3
-            )
-            total_solution = (part1 + part2).evalf(3)
-            latex_expr = sp.latex(total_solution, mat_delim="(", mat_str="pmatrix")
-            solutions.append(f"$$ x(t) = {latex_expr} $$")
-            return solutions
+        x_p = x.diff(t)
+        y_p = y.diff(t)
+        z_p = z.diff(t)
+        A_3x3 = sp.Matrix(A)
+        f = sp.Matrix([x, y, z])
+        f_p = sp.Matrix([x_p, y_p, z_p])
 
-        # --- Valores Propios Reales Distintos ---
-        if len(count_eigenvalues) == 3:
-            try:
-                P_inv = np.linalg.inv(eigenvectors)
-            except np.linalg.LinAlgError:
-                P_inv = None
-
-            if P_inv is not None:
-                spP = sp.Matrix(eigenvectors).evalf(3)
-                spPinv = sp.Matrix(P_inv).evalf(3)
-                lam1 = round(eigenvalues[0].real, 3)
-                lam2 = round(eigenvalues[1].real, 3)
-                lam3 = round(eigenvalues[2].real, 3)
-                exp_diag = sp.diag(
-                    sp.exp(lam1 * t), sp.exp(lam2 * t), sp.exp(lam3 * t)
-                ).evalf(3)
-                p_str = sp.latex(spP, mat_delim="(", mat_str="pmatrix")
-                p_inv_str = sp.latex(spPinv, mat_delim="(", mat_str="pmatrix")
-                exp_diag_str = sp.latex(exp_diag, mat_delim="(", mat_str="pmatrix")
-                solutions.append(f"$$ x(t) = {p_str} {exp_diag_str} {p_inv_str} c $$")
-                return solutions
-            else:
-                solutions.append(
-                    "$$ x(t) = P\\,e^{D t}\\,P^{-1}c,\\text{ pero }P\\text{ no es invertible.} $$"
-                )
-                return solutions
-
-        # --- Valores Propios Repetidos ---
-        else:
-            try:
-                P_inv = np.linalg.inv(eigenvectors)
-            except np.linalg.LinAlgError:
-                P_inv = None
-            if P_inv is not None:
-                diag_l = np.diag([round(ev.real, 3) for ev in eigenvalues])
-                S = eigenvectors @ diag_l @ P_inv
-                N = A - S
-                k = 1
-                while np.allclose(N, 0):
-                    N = N @ N
-                    k += 1
-                    if k >= 3:
-                        break
-                sum_str = ""
-                for i_power in range(1, k + 1):
-                    if i_power == 1:
-                        sum_str += f"+(N^{i_power} t^{i_power})"
-                    else:
-                        fac = np.math.factorial(i_power)
-                        sum_str += f"+\\frac{{N^{i_power} t^{i_power}}}{{{fac}}}"
-                solutions.append(
-                    f"$$ x(t) = P\\,e^{{(\\mathrm{{diag}}(\\lambda_i)) t}}\\,P^{{-1}}\\bigl(I {sum_str}\\bigr)c $$"
-                )
-                return solutions
-            else:
-                solutions.append("$$ \\text{Error: no se pudo invertir }P\\text{.} $$")
-                return solutions
+        eqs = f_p - A_3x3 * f
+        eq1 = sp.Eq(eqs[0], 0)
+        eq2 = sp.Eq(eqs[1], 0)
+        eq3 = sp.Eq(eqs[2], 0)
+        sol = sp.dsolve([eq1, eq2, eq3], [x, y, z])
+        return sol
 
     def plot_phase_diagram_3d(self, A, sol_y):
         fig = go.Figure()
