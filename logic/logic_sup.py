@@ -52,7 +52,7 @@ class Sup:
             ode_no_homogenea = sum(
                 coef * y(x).diff(x, grado) for coef, grado in array[:-1]
             )
-            print(rhs)
+
             sol_no_homogenea = sp.dsolve(sp.Eq(ode_no_homogenea, rhs), y(x))
 
             expr = sol_no_homogenea.rhs
