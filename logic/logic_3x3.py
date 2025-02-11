@@ -46,7 +46,9 @@ class Solve3x3:
         eq2 = sp.Eq(eqs[1], 0)
         eq3 = sp.Eq(eqs[2], 0)
         sol = sp.dsolve([eq1, eq2, eq3], [x, y, z])
-        return sol
+        sol_simplificada = [sp.simplify(so) for so in sol]
+
+        return sol_simplificada
 
     def plot_phase_diagram_3d(self, A, sol_y):
         fig = go.Figure()
