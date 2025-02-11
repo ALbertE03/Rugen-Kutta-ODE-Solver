@@ -8,6 +8,7 @@ from logic.error import (
     RK_Error,
     Inf,
 )
+import sympy as sp
 
 st.subheader("Graficadora")
 
@@ -119,6 +120,6 @@ with plot_col:
             except Inf:
                 st.error("Error de solución infinita.")
             except Exception as e:
-                st.error(f"Error inesperado: {e}")
+                st.error(f"Error: {e}")
         else:
             st.info("Por favor, ingresa una ecuación.")
