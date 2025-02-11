@@ -223,7 +223,7 @@ with plot_col:
                 # Cambiar el color de las etiquetas de los ejes a blanco
                 ax.set_xlabel("X-axis", color="white")
                 ax.set_ylabel("Y-axis", color="white")
-                scale = 1
+                scale = 2
                 if xf > 50:
                     scale = 0.5
                 if xf > 80:
