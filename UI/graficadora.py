@@ -208,19 +208,15 @@ with plot_col:
 
                 ax.set_facecolor("#0E1117")
                 fig.patch.set_facecolor("#0E1117")
-                # Graficar los datos
+
                 ax.plot(X, Y, label="rk-4", color="blue")
                 ax.spines["top"].set_color("white")
                 ax.spines["right"].set_color("white")
                 ax.spines["bottom"].set_color("white")
                 ax.spines["left"].set_color("white")
 
-                # Cambiar el color de las marcas y etiquetas de los ejes
-                ax.tick_params(
-                    axis="both", colors="white"
-                )  # Cambiar color de los valores en los ejes
+                ax.tick_params(axis="both", colors="white")
 
-                # Cambiar el color de las etiquetas de los ejes a blanco
                 ax.set_xlabel("X-axis", color="white")
                 ax.set_ylabel("Y-axis", color="white")
                 scale = 2
