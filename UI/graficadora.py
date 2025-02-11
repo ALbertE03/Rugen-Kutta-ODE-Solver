@@ -8,6 +8,7 @@ from logic.error import (
     RK_Error,
     Inf,
 )
+import matplotlib.pyplot as plt
 import sympy as sp
 
 st.subheader("Graficadora")
@@ -186,37 +187,57 @@ with plot_col:
                 )
 
                 line_data = pd.DataFrame({"x": X, "y": Y})
-                quiver_data = pd.DataFrame(
-                    {"x": X_iso, "y": Y_iso, "u": U_iso, "v": V_iso}
-                )
 
-                line_chart = (
-                    alt.Chart(line_data)
-                    .mark_line()
-                    .encode(
-                        x=alt.X("x:Q", scale=alt.Scale(domain=(x_min, x_max))),
-                        y=alt.Y("y:Q", scale=alt.Scale(domain=(y_min, y_max))),
-                    )
+                quiver_data = pd.DataFrame(
+                    {
+                        "x": X_iso,
+                        "y": Y_iso,
+                        "u": U_iso,
+                        "v": V_iso,
+                    }
                 )
 
                 arrow_length = 0.2 * scale_factor
                 quiver_data["x2"] = quiver_data["x"] + quiver_data["u"] * arrow_length
                 quiver_data["y2"] = quiver_data["y"] + quiver_data["v"] * arrow_length
+
                 quiver_data["x2"] = quiver_data["x2"].clip(lower=x_min, upper=x_max)
                 quiver_data["y2"] = quiver_data["y2"].clip(lower=y_min, upper=y_max)
 
-                arrows = (
-                    alt.Chart(quiver_data)
-                    .mark_line(color="red")
-                    .encode(x="x:Q", y="y:Q", x2="x2:Q", y2="y2:Q")
-                )
+                fig, ax = plt.subplots()
+
+                ax.set_facecolor("#0E1117")
+                fig.patch.set_facecolor("#0E1117")
+                # Graficar los datos
+                ax.plot(X, Y, label="rk-4", color="blue")
+                ax.spines["top"].set_color("white")
+                ax.spines["right"].set_color("white")
+                ax.spines["bottom"].set_color("white")
+                ax.spines["left"].set_color("white")
+
+                # Cambiar el color de las marcas y etiquetas de los ejes
+                ax.tick_params(
+                    axis="both", colors="white"
+                )  # Cambiar color de los valores en los ejes
+
+                # Cambiar el color de las etiquetas de los ejes a blanco
+                ax.set_xlabel("X-axis", color="white")
+                ax.set_ylabel("Y-axis", color="white")
+                scale = 1
+                if xf > 50:
+                    scale = 0.5
+                if xf > 80:
+                    scale = 0.1
                 if isoclinas:
-                    combined_chart = alt.layer(line_chart, arrows).properties(
-                        width=600, height=400
-                    )
-                else:
-                    combined_chart = alt.layer(line_chart).properties(
-                        width=600, height=400
+                    plt.quiver(
+                        quiver_data["x"],
+                        quiver_data["y"],
+                        quiver_data["u"],
+                        quiver_data["v"],
+                        angles="xy",
+                        scale_units="xy",
+                        scale=scale,
+                        color="red",
                     )
 
                 if comparar_pressed:
@@ -227,24 +248,21 @@ with plot_col:
                     y_max = max(y_max, max(Y3))
 
                     line_data3 = pd.DataFrame({"x": X3, "y": Y3})
-                    line_chart3 = (
-                        alt.Chart(line_data3)
-                        .mark_line(color="green")
-                        .encode(
-                            x=alt.X("x:Q", scale=alt.Scale(domain=(x_min, x_max))),
-                            y=alt.Y("y:Q", scale=alt.Scale(domain=(y_min, y_max))),
-                        )
+                    plt.plot(
+                        line_data3["x"],
+                        line_data3["y"],
+                        label="rk-3",
+                        color="green",
                     )
 
-                    if isoclinas:
-                        combined_chart = alt.layer(line_chart3, arrows).properties(
-                            width=600, height=400
-                        )
-                    else:
-                        combined_chart = alt.layer(line_chart3).properties(
-                            width=600, height=400
-                        )
-                st.altair_chart(combined_chart, use_container_width=True)
+                plt.xlim(x_min, x_max)
+                plt.ylim(y_min, y_max)
+
+                plt.xlabel("X")
+                plt.ylabel("Y")
+                plt.legend()
+
+                st.pyplot(plt)
 
             except ValueError as e:
                 st.error(f"Error: {e}")
