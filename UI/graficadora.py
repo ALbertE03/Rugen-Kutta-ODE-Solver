@@ -225,7 +225,7 @@ with plot_col:
                     scale = 0.5
                 if xf > 80:
                     scale = 0.1
-                if xf < 5:
+                if xf <= 5:
                     scale = 2
                 if isoclinas:
                     plt.quiver(
