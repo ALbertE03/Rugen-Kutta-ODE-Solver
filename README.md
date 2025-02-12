@@ -16,9 +16,9 @@ A WebApp that can solve and display solutions to differential equations (ODEs) b
 
 ## :hammer: Project Features
 
-- `Functionality 1`: description of functionality 1
-- `Functionality 2`: description of functionality 2
-- `Functionality 3`: description of functionality 3
+- `Functionality 1`: solve linear ODEs
+- `Functionality 2`: solve systems of linear ODEs of order (2,3)
+- `Functionality 3`: solve higher order linear ODEs up to order 5, homogeneous and non-homogeneous
 
 ## 🛠️ Open and run the project
 

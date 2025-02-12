@@ -40,7 +40,7 @@ with left_col:
     if tipo_edo == "Ecuación No Homogénea":
         f_expr = st.selectbox(
             "f(x)",
-            ["sin(x)", "e^(x)", "cos(x)", "x^n"],
+            ["sin(x)", "cos(x)", "x^n"],
         )
         HOMOG = True
     if f_expr == "x^n":
@@ -67,7 +67,7 @@ with left_col:
             print_latex()
             st.latex(
                 """
-                f(x) = e^x,sen(x),cos(x),\dots
+                f(x) = sen(x),cos(x),\dots
                 """
             )
             st.markdown(

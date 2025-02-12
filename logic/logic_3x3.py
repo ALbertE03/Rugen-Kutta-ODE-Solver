@@ -3,6 +3,9 @@ import sympy as sp
 import streamlit as st
 import plotly.graph_objects as go
 from scipy.integrate import solve_ivp
+import warnings
+
+warnings.simplefilter("error", RuntimeWarning)
 
 
 class Solve3x3:

@@ -4,6 +4,9 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import streamlit as st
 import sympy as sp
+import warnings
+
+warnings.simplefilter("error", RuntimeWarning)
 
 
 class Solve2x2:
@@ -82,7 +85,10 @@ class Solve2x2:
         return sol
 
     def system_2x2(self, t, Y, A):
-        return A @ Y
+        try:
+            return A @ Y
+        except:
+            raise RuntimeWarning("")
 
     def plot_phase_diagram_2d(self, A) -> None:
         fig, ax = plt.subplots(figsize=(6, 6))
