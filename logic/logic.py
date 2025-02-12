@@ -89,7 +89,9 @@ class RungeKutta:
                 )
             if any(np.isinf(y_right)) or any(np.isnan(y_right)):
                 raise Inf()
+
             return X_right, y_right
+
         except LnLog as e:
             raise LnLog(e.mensaje)
         except ZeroDivisionError as e:

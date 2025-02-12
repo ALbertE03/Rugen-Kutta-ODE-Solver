@@ -160,7 +160,7 @@ with st.expander("ℹ️ **Información de Entradas Válidas**"):
 
          **`#(...)`** y **`(...)#`**: *Será tomado en cuenta como* `#*(...)` *y* `(...)*#`
 
-         **`#x`**: *Será tomado en cuenta como* `#*x` *y* `x*#`
+         **`#x`**: *Será tomado en cuenta como* `#*x`
 
          **`x(...)`** y **`(...)x`**: *Será tomado en cuenta como* `x*(...)` *y* `(...)*x`
 
@@ -185,7 +185,6 @@ with plot_col:
                 X_iso, Y_iso, U_iso, V_iso = rk_solver.isoclinas(
                     x_min, x_max, y_min, y_max
                 )
-
                 line_data = pd.DataFrame({"x": X, "y": Y})
 
                 quiver_data = pd.DataFrame(
@@ -219,11 +218,15 @@ with plot_col:
 
                 ax.set_xlabel("X-axis", color="white")
                 ax.set_ylabel("Y-axis", color="white")
-                scale = 2
+                scale = 1
+                if y_max < 100:
+                    scale = 0.5
                 if xf > 50:
                     scale = 0.5
                 if xf > 80:
                     scale = 0.1
+                if xf < 5:
+                    scale = 2
                 if isoclinas:
                     plt.quiver(
                         quiver_data["x"],
