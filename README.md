@@ -70,7 +70,7 @@ pip install -r requirements.txt
 
 To run the project locally, run:
 ```
-streamlit run EDO-Project.py
+python -m streamlit run EDO-Project.py
 ```
 To use the web version, go to:
 
