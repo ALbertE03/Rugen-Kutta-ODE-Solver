@@ -62,9 +62,13 @@ Before running the project, make sure you have Python installed on your system. 
 
 ### Installation of Dependencies
 
-Once you have Python installed, make sure to install the dependencies required for this project:
+Once you have Python installed, make sure to install the dependencies required for this project. You can do it by opening the terminal, going to your project folder and running the command:
 
 ```
 pip install -r requirements.txt
+```
+
+To run the project, run:
+```
 streamlit run EDO-Project.py
 ```
