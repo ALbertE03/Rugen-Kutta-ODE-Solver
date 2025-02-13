@@ -68,7 +68,14 @@ Once you have Python installed, make sure to install the dependencies required f
 pip install -r requirements.txt
 ```
 
-To run the project, run:
+To run the project locally, run:
 ```
 streamlit run EDO-Project.py
 ```
+To use the web version, go to:
+
+```
+https://alberte03-rugen-kutta-ode-solver-edo-project-5qgqqb.streamlit.app
+```
+(Try using a VPN if the link is not working)
+
